@@ -1,0 +1,431 @@
+{
+  "demoTitle": "Spotting Digital Waste in Code gives you energy",
+  "model": "ChatGPT 4o",
+  "thinkingDelay": 2200,
+  "messageDelay": 500,
+  "steps": [
+    {
+      "role": "user",
+      "content": "What is this session really about?"
+    },
+    {
+      "role": "popup",
+      "content": "Digital waste is hidden cost without value. This journey helps you notice it, understand it, and act on it."
+    },
+    {
+      "role": "user",
+      "content": "What am I about to learn in this session?"
+    },
+    {
+      "role": "assistant",
+      "slide": "Agenda",
+      "content": "You move through four stages: awareness, dialogue, decision frames, and action. The goal is to make waste visible and discussable."
+    },
+    {
+      "role": "user",
+      "content": "Where does the journey begin?"
+    },
+    {
+      "role": "assistant",
+      "slide": "Opening Video",
+      "content": "It starts with a visual cue. Before code, you are invited to notice the act of looking closely.",
+      "media": [
+        {
+          "type": "video",
+          "src": ".pptx_extract/ppt/media/media1.mp4",
+          "caption": ""
+        }
+      ]
+    },
+    {
+      "role": "assistant",
+      "slide": "Spotting in Nature",
+      "content": "Freek records rare sightings because what you observe today can matter tomorrow. Measurement turns attention into something useful.",
+      "media": [
+        {
+          "type": "image",
+          "src": ".pptx_extract/ppt/media/image24.png",
+          "caption": "Slide 8: Freek as the spotting metaphor."
+        }
+      ]
+    },
+    {
+      "role": "assistant",
+      "slide": "Spotting in Nature",
+      "content": "Spotting trains your eyes. You go out early, keep looking, and slowly learn to recognize what deserves attention.",
+      "media": [
+        {
+          "type": "image",
+          "src": ".pptx_extract/ppt/media/image26.jpeg",
+          "caption": "Slide 10: learning to notice that one moment."
+        }
+      ]
+    },
+    {
+      "role": "user",
+      "content": "What changes once I start noticing more carefully?"
+    },
+    {
+      "role": "popup",
+      "content": "And then it changes. Once your eyes are trained, you stop seeing only beauty and start noticing waste too.",
+      "media": [
+        {
+          "type": "image",
+          "src": ".pptx_extract/ppt/media/image27.png",
+          "caption": "Slide 12: the moment before waste becomes visible."
+        }
+      ]
+    },
+    {
+      "role": "user",
+      "content": "What does that moment of recognition actually look like?"
+    },
+    {
+      "role": "popup",
+      "content": "Now it is everywhere: plastic by the road, a can beside the path, waste that used to feel invisible.",
+      "media": [
+        {
+          "type": "image",
+          "src": ".pptx_extract/ppt/media/image28.jpeg",
+          "caption": "Slide 13: and then... waste."
+        }
+      ]
+    },
+    {
+      "role": "user",
+      "content": "Why did I not see that sooner?"
+    },
+    {
+      "role": "popup",
+      "content": "Why did you miss it before? Habit makes waste disappear into the background.",
+      "media": [
+        {
+          "type": "image",
+          "src": ".pptx_extract/ppt/media/image29.png",
+          "caption": "Slide 15: habit makes us blind."
+        }
+      ]
+    },
+    {
+      "role": "user",
+      "content": "What else keeps people from seeing it?"
+    },
+    {
+      "role": "popup",
+      "content": "Another reason is ownership. If it feels like someone else's problem, it becomes easy to ignore.",
+      "media": [
+        {
+          "type": "image",
+          "src": ".pptx_extract/ppt/media/image30.png",
+          "caption": "Slide 16: not mine means easy to ignore."
+        }
+      ]
+    },
+    {
+      "role": "user",
+      "content": "When does ignoring it stop being possible?"
+    },
+    {
+      "role": "popup",
+      "content": "And eventually it reaches the point where ignoring it is no longer possible.",
+      "media": [
+        {
+          "type": "image",
+          "src": ".pptx_extract/ppt/media/image31.png",
+          "caption": "Slide 17: until you cannot ignore it anymore."
+        }
+      ]
+    },
+    {
+      "role": "user",
+      "content": "When does this become a value discussion?"
+    },
+    {
+      "role": "popup",
+      "content": "The shift happens when value becomes visible. Waste looks very different once you ask what something is worth.",
+      "media": [
+        {
+          "type": "image",
+          "src": ".pptx_extract/ppt/media/image32.png",
+          "caption": "Slide 18: what is this tree worth?"
+        }
+      ]
+    },
+    {
+      "role": "assistant",
+      "slide": "Tree Value",
+      "content": "The tree is framed as real value, roughly 150,000 to 250,000 euros. That reframes careless loss as measurable damage."
+    },
+    {
+      "role": "user",
+      "content": "How does that connect to software?"
+    },
+    {
+      "role": "assistant",
+      "slide": "Electricity Maps",
+      "content": "You bring in electricity maps to make infrastructure consumption feel physical. Compute is not abstract; it runs somewhere real.",
+      "media": [
+        {
+          "type": "image",
+          "src": ".pptx_extract/ppt/media/image34.png",
+          "caption": "Slide 21: Electricity Maps grounding the energy discussion."
+        }
+      ]
+    },
+    {
+      "role": "assistant",
+      "slide": "Cost Without Value",
+      "content": "Here the core definition lands: digital waste is cost without value. That cost can be money, energy, capacity, or attention.",
+      "media": [
+        {
+          "type": "image",
+          "src": ".pptx_extract/ppt/media/image39.png",
+          "caption": "Slide 23: digital waste equals cost without value."
+        }
+      ]
+    },
+    {
+      "role": "assistant",
+      "slide": "Consolidation Example",
+      "content": "Then you quantify it. Underused workloads burn energy and money, while consolidation can save cost and cut emissions at the same time."
+    },
+    {
+      "role": "user",
+      "content": "What should I look for in a real system?"
+    },
+    {
+      "role": "assistant",
+      "slide": "Three Signals",
+      "content": "Look for three signals: too much capacity with too little use, slowness without full CPU, or one saturated part while the rest waits."
+    },
+    {
+      "role": "user",
+      "content": "What forms does digital waste usually take?"
+    },
+    {
+      "role": "assistant",
+      "slide": "Four Types",
+      "content": "You meet it as idle resources, structural overcapacity, repeated default settings, or hidden compute that adds no visible value."
+    },
+    {
+      "role": "user",
+      "content": "Why does this waste stay alive for years?"
+    },
+    {
+      "role": "assistant",
+      "slide": "Link with Tech Debt",
+      "content": "Because technical debt makes change expensive. Tight coupling, maintenance burden, and fear of breakage keep waste in place."
+    },
+    {
+      "role": "user",
+      "content": "How do I think beyond just electricity savings?"
+    },
+    {
+      "role": "assistant",
+      "slide": "Workload Quality",
+      "content": "The question changes. Not only 'how do we save power?' but 'is this workload healthy, efficient, and worth running at all?'"
+    },
+    {
+      "role": "assistant",
+      "slide": "Workload Quality Visual",
+      "content": "This visual makes the pivot concrete by separating power use from utilization. A system can consume plenty without delivering much.",
+      "media": [
+        {
+          "type": "image",
+          "src": ".pptx_extract/ppt/media/image42.png",
+          "caption": "Slide 50: power versus utilization."
+        }
+      ]
+    },
+    {
+      "role": "assistant",
+      "slide": "Workload Quality Sequence",
+      "content": "The follow-up slides reinforce the same point: healthy workloads balance value, efficiency, and operational quality, not just raw activity."
+    },
+    {
+      "role": "user",
+      "content": "Can a tiny code change really matter that much?"
+    },
+    {
+      "role": "popup",
+      "content": "Only 40 lines of code can hide a massive gap in latency, work done, and energy consumed.",
+      "media": [
+        {
+          "type": "image",
+          "src": ".pptx_extract/ppt/media/image50.png",
+          "caption": "Slide 55: only 40 lines of code."
+        }
+      ]
+    },
+    {
+      "role": "assistant",
+      "slide": "Primeagen",
+      "content": "The case starts with something recognizable: ThePrimeagen and a story engineers can immediately relate to.",
+      "media": [
+        {
+          "type": "image",
+          "src": ".pptx_extract/ppt/media/image48.png",
+          "caption": "Slide 54: ThePrimeagen reference."
+        }
+      ]
+    },
+    {
+      "role": "assistant",
+      "slide": "Code Case Intro",
+      "content": "A bug report and a tiny implementation detail become the entry point. That makes the waste feel concrete, not theoretical.",
+      "media": [
+        {
+          "type": "image",
+          "src": ".pptx_extract/ppt/media/image51.png",
+          "caption": "Slide 57: OpenJDK issue and case framing."
+        }
+      ]
+    },
+    {
+      "role": "assistant",
+      "slide": "Procfs vs Direct Clock",
+      "content": "The deck then explains the core idea: reading procfs means opening text and parsing it, while direct clock access is simpler and faster."
+    },
+    {
+      "role": "user",
+      "content": "What exactly makes the old path expensive?"
+    },
+    {
+      "role": "assistant",
+      "slide": "Old Implementation Visuals",
+      "content": "The visuals show where the work hides: file open, text read, parsing, copies, and formatting. Small code can still create a heavy path.",
+      "media": [
+        {
+          "type": "image",
+          "src": ".pptx_extract/ppt/media/image54.png",
+          "caption": "Slide 60: expensive calls in the old path."
+        }
+      ],
+      "code": [
+        {
+          "language": "cpp",
+          "caption": "Old procfs-based path reconstructed from the code slides.",
+          "content": "static jlong user_thread_cpu_time(Thread* thread) {\n  pid_t tid = thread->osthread()->thread_id();\n  char* s;\n  char stat[2048];\n  size_t statlen;\n  char proc_name[64];\n  int count;\n  long sys_time, user_time;\n  char cdummy;\n  int idummy;\n  long ldummy;\n  FILE* fp;\n\n  os::snprintf_checked(proc_name, 64, \"/proc/self/task/%d/stat\", tid);\n  fp = os::fopen(proc_name, \"r\");\n  if (fp == nullptr) return -1;\n\n  statlen = fread(stat, 1, 2047, fp);\n  stat[statlen] = '\\0';\n  fclose(fp);\n\n  s = strrchr(stat, ')');\n  if (s == nullptr) return -1;\n  do { s++; } while (s && isspace((unsigned char)*s));\n\n  count = sscanf(s, \"%c %d %d %d %d %d %lu %lu %lu %lu %lu %lu %lu\",\n    &cdummy, &idummy, &idummy, &idummy, &idummy, &idummy,\n    &ldummy, &ldummy, &ldummy, &ldummy, &ldummy,\n    &user_time, &sys_time);\n\n  if (count != 13) return -1;\n  return (jlong)user_time * (1000000000 / os::Posix::clock_tics_per_second());\n}"
+        }
+      ]
+    },
+    {
+      "role": "assistant",
+      "slide": "Bottlenecks in the Old Path",
+      "content": "The slides name the hotspots explicitly: fopen, fread, and sscanf. That is where extra micro-ops and switching energy pile up."
+    },
+    {
+      "role": "user",
+      "content": "So what does the better path change?"
+    },
+    {
+      "role": "assistant",
+      "slide": "Better Implementation",
+      "content": "The better path asks the kernel directly for the right clock. Less parsing, less copying, fewer syscalls, and much better latency.",
+      "media": [
+        {
+          "type": "image",
+          "src": ".pptx_extract/ppt/media/image63.png",
+          "caption": "Slide 71: from microseconds to nanoseconds."
+        }
+      ],
+      "code": [
+        {
+          "language": "cpp",
+          "caption": "The optimized path shown in the later code slides.",
+          "content": "static bool get_thread_clockid(Thread* thread, clockid_t* clockid, bool total) {\n  constexpr clockid_t CLOCK_TYPE_MASK = 3;\n  constexpr clockid_t CPUCLOCK_VIRT = 1;\n\n  int rc = pthread_getcpuclockid(thread->osthread()->pthread_id(), clockid);\n  if (rc != 0) {\n    assert_status(rc == ESRCH, rc, \"pthread_getcpuclockid failed\");\n    return false;\n  }\n\n  if (!total) {\n    *clockid = (*clockid & ~CLOCK_TYPE_MASK) | CPUCLOCK_VIRT;\n  }\n\n  return true;\n}\n\nstatic jlong user_thread_cpu_time(Thread* thread) {\n  clockid_t clockid;\n  bool success = get_thread_clockid(thread, &clockid, false);\n  return success ? os::Linux::thread_cpu_time(clockid) : -1;\n}"
+        }
+      ]
+    },
+    {
+      "role": "user",
+      "content": "How should I treat this code case during the talk?"
+    },
+    {
+      "role": "popup",
+      "content": "Check it out later, not now. The code case should sharpen your eye, not pull attention away from your own systems.",
+      "media": [
+        {
+          "type": "image",
+          "src": ".pptx_extract/ppt/media/image64.png",
+          "caption": "Slide 73: check it out later."
+        }
+      ]
+    },
+    {
+      "role": "user",
+      "content": "How do I turn this insight into backlog items?"
+    },
+    {
+      "role": "assistant",
+      "slide": "Backlog Framing",
+      "content": "Map each waste item to yearly cost, energy or CO2, performance impact, and risk. That is how it becomes backlog-worthy."
+    },
+    {
+      "role": "assistant",
+      "slide": "Outcome Language",
+      "content": "Do not pitch implementation details. Frame it as an outcome, like reducing infrastructure cost by consolidating underused workloads."
+    },
+    {
+      "role": "assistant",
+      "slide": "Quick Wins",
+      "content": "Start with safe quick wins. Not a platform revolution, but cleanup, consolidation, and right-sizing."
+    },
+    {
+      "role": "assistant",
+      "slide": "Capacity for Reduction",
+      "content": "Give it room to happen: reserve sprint capacity or a quarterly target. Otherwise urgent delivery will always win."
+    },
+    {
+      "role": "assistant",
+      "slide": "Ownership",
+      "content": "No owner means no living backlog item. Add labels, ownership, and a reason to revisit the work."
+    },
+    {
+      "role": "user",
+      "content": "What happens if teams leave this alone?"
+    },
+    {
+      "role": "popup",
+      "content": "If you do nothing, inefficiency keeps running: more cost, more energy use, and more systems slowly gathering dust.",
+      "media": [
+        {
+          "type": "image",
+          "src": ".pptx_extract/ppt/media/image65.jpeg",
+          "caption": "Slide 79: if you do nothing."
+        }
+      ]
+    },
+    {
+      "role": "user",
+      "content": "What decision framework should I leave with?"
+    },
+    {
+      "role": "assistant",
+      "slide": "Frames",
+      "content": "Use three frames: value, cost, and exception. Ask who uses it, what it costs, and whether the trade-off is intentional."
+    },
+    {
+      "role": "assistant",
+      "slide": "Choices",
+      "content": "Then choose: remove it, combine it, calibrate it, or consciously accept it with a named owner."
+    },
+    {
+      "role": "user",
+      "content": "How should I start after this talk?"
+    },
+    {
+      "role": "assistant",
+      "slide": "Get Started",
+      "content": "Start with one application. Ask what you already do, what blocks progress, and which system has the biggest user, compute, or cost impact."
+    },
+    {
+      "role": "user",
+      "content": "So what should I walk away with?"
+    },
+    {
+      "role": "popup",
+      "content": "You can now spot digital waste, discuss workload quality, inspect code differently, and turn that insight into practical action."
+    }
+  ]
+}

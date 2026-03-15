@@ -14,39 +14,53 @@
       --muted: #a0a8b3;
       --accent: #10a37f;
       --accent-hover: #0c8767;
+      --scroll-track: #171a1d;
+      --scroll-thumb: #3a434d;
+      --scroll-thumb-hover: #55616d;
     }
     * { box-sizing: border-box; }
     html, body { margin: 0; height: 100%; font-family: "Segoe UI", Arial, sans-serif; background: var(--bg); color: var(--text); }
+    * { scrollbar-width: thin; scrollbar-color: var(--scroll-thumb) var(--scroll-track); }
+    *::-webkit-scrollbar { width: 12px; height: 12px; }
+    *::-webkit-scrollbar-track { background: var(--scroll-track); }
+    *::-webkit-scrollbar-thumb { background: var(--scroll-thumb); border-radius: 999px; border: 3px solid var(--scroll-track); }
+    *::-webkit-scrollbar-thumb:hover { background: var(--scroll-thumb-hover); }
+    *::-webkit-scrollbar-corner { background: var(--scroll-track); }
     body { display: flex; overflow: hidden; }
     aside { width: 250px; background: var(--panel); border-right: 1px solid var(--border); padding: 16px; display: flex; flex-direction: column; gap: 12px; }
     .sidebar-list { display: flex; flex-direction: column; gap: 8px; overflow: auto; }
     .sidebar-item { width: 100%; border: 1px solid transparent; background: transparent; color: var(--muted); text-align: left; border-radius: 12px; padding: 10px; cursor: pointer; }
     .sidebar-item.active, .sidebar-item:hover { color: var(--text); background: rgba(255,255,255,0.04); border-color: rgba(16,163,127,0.25); }
     .role { display: block; font-size: 11px; text-transform: uppercase; letter-spacing: .08em; margin-bottom: 4px; }
-    main { flex: 1; display: flex; flex-direction: column; min-width: 0; }
-    header { height: 60px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; padding: 0 18px; }
+    main { flex: 1; display: flex; flex-direction: column; min-width: 0; position: relative; }
+    header { min-height: 60px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; gap: 16px; padding: 10px 18px; }
+    .header-actions { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; justify-content: flex-end; }
     .pill { border: 1px solid var(--border); padding: 9px 14px; border-radius: 999px; }
+    .menu-wrap { position: relative; }
+    .menu-panel { position: absolute; top: calc(100% + 8px); right: 0; min-width: 220px; padding: 10px; border-radius: 16px; border: 1px solid var(--border); background: rgba(17,19,21,.98); box-shadow: 0 12px 30px rgba(0,0,0,.28); display: none; z-index: 35; }
+    .menu-panel.visible { display: grid; gap: 8px; }
+    .menu-status { padding: 4px 6px 0; color: var(--muted); font-size: 12px; }
     #messages { flex: 1; overflow: auto; padding: 24px; }
     .welcome { min-height: 100%; display: grid; place-items: center; text-align: center; color: var(--muted); }
     .welcome h2 { color: var(--text); font-size: clamp(28px, 4vw, 38px); margin: 0 0 8px; }
     .message { display: flex; gap: 12px; margin-bottom: 18px; }
     .message.user { justify-content: flex-end; }
     .avatar { width: 34px; height: 34px; display: grid; place-items: center; border-radius: 12px; background: rgba(16,163,127,.15); border: 1px solid rgba(16,163,127,.24); color: #d9fff3; font-size: 13px; font-weight: 700; }
-    .bubble, .content { max-width: min(760px, 82%); border-radius: 18px; padding: 14px 16px; line-height: 1.6; }
+    .bubble, .content { max-width: min(860px, 88%); border-radius: 18px; padding: 18px 20px; line-height: 1.7; font-size: 20px; position: relative; }
     .bubble { background: #2f2f2f; border: 1px solid rgba(255,255,255,.05); }
     .content { background: var(--card); border: 1px solid var(--border); }
-    .content p, .content ul, .content ol, .content blockquote { margin: 0 0 12px; }
+    .content p, .content ul, .content ol, .content blockquote { margin: 0 0 14px; }
     .content p:last-child, .content ul:last-child, .content ol:last-child, .content blockquote:last-child { margin-bottom: 0; }
     .content ul, .content ol { padding-left: 22px; }
     .content blockquote { border-left: 3px solid var(--accent); padding-left: 12px; color: #d7e7e3; }
-    .content code { background: rgba(255,255,255,.08); border-radius: 6px; padding: 2px 6px; }
-    .content pre { margin: 0 0 14px; padding: 14px 16px; border-radius: 16px; overflow: auto; background: rgba(7,10,12,.85); border: 1px solid rgba(255,255,255,.08); }
-    .content pre code { background: transparent; padding: 0; border-radius: 0; display: block; color: #dce8f2; }
-    .slide-ref { display: inline-block; margin-bottom: 12px; padding: 5px 10px; border-radius: 999px; border: 1px solid rgba(16,163,127,.3); background: rgba(16,163,127,.12); color: #c6f7ea; font-size: 12px; font-weight: 700; letter-spacing: .03em; }
+    .content code { background: rgba(255,255,255,.08); border-radius: 6px; padding: 2px 6px; font-size: .95em; }
+    .content pre { margin: 0 0 16px; padding: 16px 18px; border-radius: 16px; overflow: auto; background: rgba(7,10,12,.85); border: 1px solid rgba(255,255,255,.08); }
+    .content pre code { background: transparent; padding: 0; border-radius: 0; display: block; color: #dce8f2; font-size: 16px; line-height: 1.5; }
+    .slide-ref { display: inline-block; margin-bottom: 12px; padding: 6px 11px; border-radius: 999px; border: 1px solid rgba(16,163,127,.3); background: rgba(16,163,127,.12); color: #c6f7ea; font-size: 14px; font-weight: 700; letter-spacing: .03em; }
     .media-stack, .code-stack { display: grid; gap: 12px; margin-top: 14px; }
     .media-card, .code-card { margin: 0; padding: 12px; border-radius: 18px; background: rgba(255,255,255,.03); border: 1px solid rgba(255,255,255,.08); }
     .media-card img, .media-card video { width: 100%; display: block; border-radius: 12px; background: #0c0f11; }
-    .media-caption, .code-caption { margin-top: 8px; color: var(--muted); font-size: 12px; }
+    .media-caption, .code-caption { margin-top: 8px; color: var(--muted); font-size: 14px; }
     .typing { display: inline-flex; gap: 6px; padding: 4px 0; }
     .typing span, .status-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--muted); animation: pulse 1s infinite ease-in-out; }
     .typing span:nth-child(2) { animation-delay: .14s; }
@@ -58,30 +72,39 @@
     .dot.done { background: var(--accent); }
     .dot.current { background: #fff; }
     .controls { display: flex; gap: 12px; align-items: center; border: 1px solid var(--border); border-radius: 22px; padding: 14px 16px; background: rgba(58,58,58,.88); }
-    .fake-input { flex: 1; color: var(--muted); }
+    .fake-input { flex: 1; color: var(--muted); font-size: 18px; }
     button.primary, .restart-btn, .popup-btn { border: none; border-radius: 12px; background: var(--accent); color: #fff; font-weight: 700; padding: 12px 16px; cursor: pointer; }
     button.primary:hover, .restart-btn:hover, .popup-btn:hover:not(:disabled) { background: var(--accent-hover); }
     button.primary:disabled, .popup-btn:disabled { background: rgba(255,255,255,.08); color: var(--muted); cursor: not-allowed; }
-    .hint { color: var(--muted); font-size: 12px; margin-top: 10px; }
+    .hint { color: var(--muted); font-size: 14px; margin-top: 10px; }
     .badge { color: #c6f7ea; font-weight: 600; }
-    .popup-overlay { position: fixed; inset: 0; background: rgba(9,11,13,.76); backdrop-filter: blur(8px); display: grid; place-items: center; opacity: 0; transition: opacity .28s ease; z-index: 20; }
+    .popup-overlay { position: absolute; inset: 0; background: rgba(9,11,13,.76); backdrop-filter: blur(8px); display: grid; place-items: center; opacity: 0; transition: opacity .28s ease; z-index: 20; }
     .popup-overlay.visible { opacity: 1; }
-    .popup-card { width: min(80vw, 1200px); min-height: min(80vh, 760px); border-radius: 28px; padding: clamp(28px, 4vw, 56px); text-align: center; display: flex; flex-direction: column; justify-content: center; background: linear-gradient(180deg, rgba(31,35,38,.98), rgba(20,22,24,.98)); border: 1px solid rgba(255,255,255,.08); transform: translateY(18px) scale(.98); transition: transform .28s ease; }
+    .popup-card { width: min(80vw, 1200px); min-height: min(80vh, 760px); border-radius: 28px; padding: clamp(36px, 5vw, 72px); text-align: center; display: flex; flex-direction: column; justify-content: center; background: radial-gradient(circle at top, rgba(16,163,127,.14), transparent 35%), linear-gradient(180deg, rgba(31,35,38,.98), rgba(20,22,24,.98)); border: 1px solid rgba(255,255,255,.08); transform: translateY(18px) scale(.98); transition: transform .28s ease; }
     .popup-overlay.visible .popup-card { transform: translateY(0) scale(1); }
-    .robot { width: 120px; height: 120px; margin: 0 auto 18px; border-radius: 30px; position: relative; background: linear-gradient(180deg, #203241, #15212b); border: 1px solid rgba(16,163,127,.28); }
-    .robot::before, .robot::after { content: ""; position: absolute; top: 40px; width: 18px; height: 18px; border-radius: 50%; background: #aef7e3; box-shadow: 0 0 18px rgba(16,163,127,.45); }
-    .robot::before { left: 30px; }
-    .robot::after { right: 30px; }
-    .mouth { position: absolute; left: 50%; bottom: 28px; width: 42px; height: 8px; transform: translateX(-50%); border-radius: 999px; background: rgba(174,247,227,.86); }
-    .robot.speaking .mouth { animation: mouth .5s infinite ease-in-out; }
     .popup-text { font-size: clamp(28px, 3.8vw, 56px); line-height: 1.15; margin-bottom: 22px; text-wrap: balance; }
-    .status { display: inline-flex; align-items: center; gap: 8px; color: var(--muted); margin-bottom: 18px; }
     .message.popup { justify-content: center; }
-    .popup-inline { width: min(900px, 100%); padding: 22px 24px; border-radius: 24px; text-align: center; background: linear-gradient(180deg, rgba(31,35,38,.92), rgba(20,22,24,.92)); border: 1px solid rgba(255,255,255,.08); }
-    .popup-inline .popup-text { font-size: clamp(20px, 2.6vw, 34px); margin-bottom: 0; }
+    .popup-inline { width: min(900px, 100%); padding: 26px 28px; border-radius: 24px; text-align: center; background: radial-gradient(circle at top, rgba(16,163,127,.12), transparent 35%), linear-gradient(180deg, rgba(31,35,38,.92), rgba(20,22,24,.92)); border: 1px solid rgba(255,255,255,.08); position: relative; }
+    .popup-inline .popup-text { font-size: clamp(22px, 2.9vw, 38px); margin-bottom: 0; }
+    .popup-card .media-stack, .popup-inline .media-stack { margin-top: 0; }
+    .popup-card .media-card, .popup-inline .media-card { background: rgba(255,255,255,.04); }
+    .popup-card .media-card img, .popup-card .media-card video { max-height: 42vh; object-fit: contain; }
+    .popup-inline .media-card img, .popup-inline .media-card video { max-height: 280px; object-fit: contain; }
+    .toolbar-btn { border: 1px solid var(--border); background: rgba(255,255,255,.04); color: var(--text); border-radius: 12px; padding: 10px 14px; font-weight: 700; cursor: pointer; }
+    .toolbar-btn:hover { background: rgba(255,255,255,.08); }
+    .toolbar-btn.active { border-color: rgba(16,163,127,.4); background: rgba(16,163,127,.16); color: #d9fff3; }
+    .edit-step-btn { position: absolute; top: 10px; right: 10px; border: 1px solid rgba(16,163,127,.35); background: rgba(16,163,127,.15); color: #d9fff3; border-radius: 10px; padding: 7px 10px; font-size: 12px; font-weight: 700; cursor: pointer; }
+    .edit-step-btn:hover { background: rgba(16,163,127,.24); }
+    .editor-overlay { position: absolute; inset: 0; background: rgba(7,9,10,.82); backdrop-filter: blur(8px); display: none; place-items: center; z-index: 30; }
+    .editor-overlay.visible { display: grid; }
+    .editor-card { width: min(92vw, 860px); max-height: 88vh; overflow: auto; border-radius: 24px; padding: 24px; background: linear-gradient(180deg, rgba(31,35,38,.98), rgba(20,22,24,.98)); border: 1px solid rgba(255,255,255,.08); }
+    .editor-card h3 { margin: 0 0 12px; font-size: 22px; }
+    .editor-card p { margin: 0 0 14px; color: var(--muted); }
+    .editor-field { width: 100%; min-height: 220px; resize: vertical; border-radius: 16px; border: 1px solid rgba(255,255,255,.12); background: rgba(7,10,12,.9); color: var(--text); padding: 16px; font: 16px/1.5 Consolas, "Courier New", monospace; }
+    .editor-actions { display: flex; gap: 10px; justify-content: flex-end; margin-top: 14px; flex-wrap: wrap; }
+    .editor-note { color: var(--muted); font-size: 13px; }
     @keyframes pulse { 0%,100% { opacity:.35; transform: translateY(0); } 50% { opacity:1; transform: translateY(-1px); } }
-    @keyframes mouth { 0%,100% { transform: translateX(-50%) scaleY(1); } 50% { transform: translateX(-50%) scaleY(2.4); } }
-    @media (max-width: 900px) { body { flex-direction: column; } aside { width: 100%; max-height: 190px; border-right: none; border-bottom: 1px solid var(--border); } .popup-card { width: 92vw; min-height: 70vh; } .popup-text { font-size: clamp(24px, 6vw, 38px); } }
+    @media (max-width: 900px) { body { flex-direction: column; } aside { width: 100%; max-height: 190px; border-right: none; border-bottom: 1px solid var(--border); } .popup-card { width: 92vw; min-height: 70vh; } .popup-text { font-size: clamp(24px, 6vw, 38px); } header { align-items: flex-start; } .header-actions { width: 100%; justify-content: flex-start; } .menu-panel { left: 0; right: auto; } }
   </style>
 </head>
 <body>
@@ -92,7 +115,17 @@
   <main>
     <header>
       <div id="demo-title">AI Business Strategy</div>
-      <div class="pill" id="model-label">ChatGPT 4o</div>
+      <div class="header-actions">
+        <div class="pill" id="model-label">ChatGPT 4o</div>
+        <div class="menu-wrap">
+          <button class="toolbar-btn" id="tools-menu-btn" type="button">Tools</button>
+          <div class="menu-panel" id="tools-menu">
+            <button class="toolbar-btn" id="edit-mode-btn" type="button">Edit Mode</button>
+            <button class="toolbar-btn" id="save-json-btn" type="button">Export JSON</button>
+            <div class="menu-status" id="save-status">Loading data...</div>
+          </div>
+        </div>
+      </div>
     </header>
     <div id="messages"></div>
     <footer>
@@ -100,125 +133,21 @@
       <div class="controls" id="controls"><span class="fake-input" id="fake-input">Ask ChatGPT anything...</span><button class="primary" id="continue-btn" type="button">Start Demo</button></div>
       <div class="hint">Press Space or Right Arrow to advance. Press R to restart.</div>
     </footer>
+    <div class="editor-overlay" id="editor-overlay">
+      <div class="editor-card">
+        <h3 id="editor-title">Edit Step</h3>
+        <p id="editor-meta">Pas de step-content aan en sla op.</p>
+        <textarea class="editor-field" id="editor-field"></textarea>
+        <div class="editor-actions">
+          <span class="editor-note">Alleen `step.content` wordt aangepast. Media en code blijven staan.</span>
+          <button class="toolbar-btn" id="editor-cancel-btn" type="button">Cancel</button>
+          <button class="toolbar-btn active" id="editor-save-btn" type="button">Save Step</button>
+        </div>
+      </div>
+    </div>
   </main>
   <script>
-    const chatData = {
-      demoTitle: "Spotting Digital Waste in Code gives you energy",
-      model: "ChatGPT 4o",
-      thinkingDelay: 2200,
-      messageDelay: 500,
-      steps: [
-        { role: "popup", content: "This demo now follows your slide deck like a GenAI conversation. It keeps the chat feel, but the story, visuals, code, and examples come from the PowerPoint." },
-        { role: "user", content: "Can you walk me through the presentation as if the talk itself is a live GenAI chat?" },
-        { role: "assistant", slide: "Slides 4-5 | Agenda", content: `Yes. The deck naturally breaks into four acts:\n\n1. **Inzicht & Bewustwording**\nLearn to notice digital waste the same way you learn to notice litter in nature.\n\n2. **Dialoog & Perspectief**\nShift the conversation from raw energy metrics to the quality of workloads and execution behaviour.\n\n3. **Kaders & Keuzes**\nDecide when something is waste, when it is a trade-off, and what action belongs on the backlog.\n\n4. **Aan de slag**\nEnd with concrete questions the audience can take back to their own systems.\n\nThat makes the chat flow feel like a guided investigation rather than a linear slide dump.` },
-        { role: "user", content: "How do you make the audience feel what spotting really means?" },
-        { role: "assistant", slide: "Slides 7-17 | Spotting in de natuur", content: `You start with an analogy. People first learn to spot what they care about.\n\nIn the deck, Freek goes into nature looking for rare birds. Once you train your eyes, you begin to notice patterns. Then the twist lands: after learning to look carefully, you also start to notice **waste**.\n\nThat is the bridge to software. Digital waste is often invisible at first because:\n\n- habit makes teams blind\n- ownership is diffuse: "not my problem"\n- the cost stays abstract until it compounds\n\nSo the opening section teaches the audience a mental move: **first see it, then name it, then act on it.**`, media: [
-          { type: "video", src: ".pptx_extract/ppt/media/media1.mp4", caption: "Embedded intro clip from the deck." },
-          { type: "image", src: ".pptx_extract/ppt/media/image28.jpeg", caption: "The nature-to-waste visual pivot from the opening story." }
-        ] },
-        { role: "user", content: "Once they can see it, how do you explain the cost?" },
-        { role: "assistant", slide: "Slides 18-30 | Kosten zonder waarde", content: `The next move is to make waste concrete.\n\nYou connect visible waste in the physical world to invisible waste in digital systems. The deck does that through a tree-value example, then broadens into electricity context and finally lands on a simple definition:\n\n> **Digital Waste = kosten zonder waarde**\n\nFrom there, the slides make two points very clearly:\n\n- low utilisation still consumes meaningful energy\n- consolidating underused workloads reduces both cost and emissions\n\nThe VM example is especially strong because it translates utilisation into something operationally familiar: three 25% workloads consolidated into one 75% workload means lower annual cost and lower yearly energy use.`, media: [
-          { type: "image", src: ".pptx_extract/ppt/media/image34.png", caption: "Electricity Maps screenshot used to ground the discussion in real energy context." }
-        ] },
-        { role: "user", content: "What practical signals do you give engineers so this does not stay abstract?" },
-        { role: "assistant", slide: "Slides 31-39 | Signalen en typen", content: `You give them diagnostic signals first, then waste categories.\n\n**Three signals**\n- Lots of capacity, little real usage\n- The system feels slow while CPU is not saturated\n- One component is maxed out while the rest is idle\n\n**Four types of digital waste**\n- resources running without useful work\n- structural overcapacity\n- configuration choices repeated from habit\n- hidden compute that adds no business value\n\nThis is a good point in the chat to reinforce that waste is not only about idle servers. It also shows up as waiting, imbalance, avoidable background work, and inherited defaults.` },
-        { role: "user", content: "Where do you connect this to software architecture and technical debt?" },
-        { role: "assistant", slide: "Slides 40-47 | Link met tech debt", content: `The tech-debt section says the quiet part out loud: waste persists because systems become tightly coupled and expensive to change.\n\nYou describe a recognisable failure mode:\n\n- one change forces five more changes\n- testing takes longer\n- faults ripple across components\n- replacing old solutions becomes risky\n\nThat matters for green software engineering because digital waste is often **maintained by design friction**. Teams keep dragging inefficient choices forward because changing them has become too expensive.\n\nSo the deck links waste to a deeper root cause: not just poor runtime behaviour, but architectures that make better behaviour harder to introduce.` },
-        { role: "user", content: "How do you shift the conversation from saving energy to workload quality?" },
-        { role: "assistant", slide: "Slides 49-53 | Kwaliteit van workloads", content: `This is one of the strongest pivots in the deck.\n\nInstead of asking **"How do we save electricity?"**, you ask **"Is this workload healthy, efficient, and valuable?"**\n\nThat framing is useful because engineers can reason about workload quality immediately. They understand utilisation, waiting, data movement, bottlenecks, and underused resources. Sustainability then becomes an engineering consequence of better workload design, not a separate moral layer.\n\nThe workload-quality visuals help show why utilisation matters: power use does not fall linearly with utilisation, so badly used infrastructure can stay surprisingly expensive in both cost and energy terms.`, media: [
-          { type: "image", src: ".pptx_extract/ppt/media/image42.png", caption: "Power-versus-utilisation graphic from the workload quality section." }
-        ] },
-        { role: "user", content: "Where does the code example enter the story?" },
-        { role: "assistant", slide: "Slides 54-66 | Only 40 lines of code", content: `The deck then narrows from infrastructure and workloads down to code-level waste.\n\nYou use the OpenJDK thread CPU time example as a perfect case study because it is compact, measurable, and surprising. The message is:\n\n- a tiny implementation detail can create a huge performance gap\n- runtime behaviour matters more than source-code size\n- GenAI can help inspect unfamiliar code and surface likely bottlenecks quickly\n\nThe narrative arc here is strong: start from a bug report, examine the old approach, identify where the waste comes from, compare an alternative design, and then show the resulting improvement.`, media: [
-          { type: "image", src: ".pptx_extract/ppt/media/image47.png", caption: "The OpenJDK issue showing the 30x-400x slowdown problem statement." },
-          { type: "image", src: ".pptx_extract/ppt/media/image50.png", caption: "External reference used in the deck to frame the 40-line fix story." }
-        ] },
-        { role: "user", content: "Show me how the deck presents the waste in the old implementation." },
-        { role: "assistant", slide: "Slides 67-69 | Oude implementatie", content: `The old implementation repeatedly walks through **procfs** and parses text just to read thread CPU time.\n\nThat is the key teaching moment. The waste is not in a giant algorithm. It is in a small chain of operations that looks innocent in code review but is expensive at runtime:\n\n- open a proc file\n- read kernel-formatted text into user space\n- search through the string\n- parse multiple numbers with \`sscanf\`\n\nThe deck explicitly calls out \`fopen\`, \`fread\`, and \`sscanf\` as energy-heavy or micro-op-heavy blocks because they trigger syscalls, data copies, formatting, and branch-heavy parsing.`, media: [
-          { type: "image", src: ".pptx_extract/ppt/media/image52.png", caption: "Original OpenJDK code path reading `/proc/self/task/%d/stat`." },
-          { type: "image", src: ".pptx_extract/ppt/media/image54.png", caption: "Profile view highlighting expensive work inside the old path." }
-        ], code: [
-          {
-            language: "cpp",
-            caption: "Old procfs-based path reconstructed from the code slides.",
-            content: `static jlong user_thread_cpu_time(Thread* thread) {
-  pid_t tid = thread->osthread()->thread_id();
-  char* s;
-  char stat[2048];
-  size_t statlen;
-  char proc_name[64];
-  int count;
-  long sys_time, user_time;
-  char cdummy;
-  int idummy;
-  long ldummy;
-  FILE* fp;
-
-  os::snprintf_checked(proc_name, 64, "/proc/self/task/%d/stat", tid);
-  fp = os::fopen(proc_name, "r");
-  if (fp == nullptr) return -1;
-
-  statlen = fread(stat, 1, 2047, fp);
-  stat[statlen] = '\\0';
-  fclose(fp);
-
-  s = strrchr(stat, ')');
-  if (s == nullptr) return -1;
-  do { s++; } while (s && isspace((unsigned char)*s));
-
-  count = sscanf(s, "%c %d %d %d %d %d %lu %lu %lu %lu %lu %lu %lu",
-    &cdummy, &idummy, &idummy, &idummy, &idummy, &idummy,
-    &ldummy, &ldummy, &ldummy, &ldummy, &ldummy,
-    &user_time, &sys_time);
-
-  if (count != 13) return -1;
-  return (jlong)user_time * (1000000000 / os::Posix::clock_tics_per_second());
-}`
-          }
-        ] },
-        { role: "user", content: "And what is the better path you show afterwards?" },
-        { role: "assistant", slide: "Slides 70-72 | Betere implementatie", content: `The improved version avoids procfs entirely and asks the kernel for the right clock directly.\n\nThat removes file opens, string parsing, and most of the avoidable data movement. The result is conceptually cleaner and operationally cheaper.\n\nThe deck positions this as a great GenAI exercise: given the old code and a runtime model, could an assistant predict that direct clock queries would beat a procfs-based design? That is exactly the kind of unfamiliar-code reasoning you want the audience to imagine using in their own work.`, media: [
-          { type: "image", src: ".pptx_extract/ppt/media/image62.png", caption: "Replacement implementation using direct thread clock access." },
-          { type: "image", src: ".pptx_extract/ppt/media/image63.png", caption: "Outcome slide showing the drop from microseconds to nanoseconds." }
-        ], code: [
-          {
-            language: "cpp",
-            caption: "The optimized path shown in the later code slides.",
-            content: `static bool get_thread_clockid(Thread* thread, clockid_t* clockid, bool total) {
-  constexpr clockid_t CLOCK_TYPE_MASK = 3;
-  constexpr clockid_t CPUCLOCK_VIRT = 1;
-
-  int rc = pthread_getcpuclockid(thread->osthread()->pthread_id(), clockid);
-  if (rc != 0) {
-    assert_status(rc == ESRCH, rc, "pthread_getcpuclockid failed");
-    return false;
-  }
-
-  if (!total) {
-    *clockid = (*clockid & ~CLOCK_TYPE_MASK) | CPUCLOCK_VIRT;
-  }
-
-  return true;
-}
-
-static jlong user_thread_cpu_time(Thread* thread) {
-  clockid_t clockid;
-  bool success = get_thread_clockid(thread, &clockid, false);
-  return success ? os::Linux::thread_cpu_time(clockid) : -1;
-}`
-          }
-        ] },
-        { role: "user", content: "How do you turn all of this into backlog work instead of a nice conference insight?" },
-        { role: "assistant", slide: "Slides 74-79 | Naar de backlog", content: `The deck is very practical here. You tell the audience not to backlog vague technical clean-up. Backlog **outcomes** instead.\n\nExamples from the slides:\n\n- attach each waste item to euro-per-year impact\n- estimate energy or CO2 effect\n- include performance impact and risk\n- start with safe quick wins such as consolidation and right-sizing\n- reserve explicit delivery capacity, otherwise MVP pressure wins every time\n\nThe important management insight is that Product Owners prioritise outcomes, not infrastructure wording. So you translate waste into cost reduction, performance gain, or risk reduction.` },
-        { role: "user", content: "What framework do you leave them with for making decisions?" },
-        { role: "assistant", slide: "Slides 80-88 | Kaders en keuzes", content: `You leave the audience with three frames and one action model.\n\n**Frames**\n- Value: who uses this, what value does it create, what happens if we turn it off?\n- Cost: euro per year, energy or CO2, performance impact, operational complexity\n- Exception: is this a deliberate trade-off for compliance, resilience, peak load, or strategic flexibility?\n\n**ABCD actions**\n- **Afbouwen**: remove or switch off\n- **Bundelen**: consolidate or right-size\n- **Calibreren**: tune configuration or fix behaviour\n- **Dispensatie**: keep it intentionally, with an owner\n\nThat gives the talk a clean ending: not every inefficient thing must disappear, but every costly thing should become a conscious decision.` },
-        { role: "user", content: "How do you close the talk so the audience leaves with momentum?" },
-        { role: "assistant", slide: "Slides 89-92 | Aan de slag", content: `The final slides turn the room back onto itself with simple, useful questions:\n\n- What are you already doing around Sustainable IT?\n- What is blocking progress right now?\n- Which application has the most users, the most compute hours, or the highest cost?\n\nThat works well because it avoids a moral ending. Instead, the session closes with an engineering challenge: pick one meaningful workload, inspect it, find digital waste, and convert that insight into an owned improvement.`, media: [
-          { type: "image", src: ".pptx_extract/ppt/media/image64.png", caption: "Closing QR code from the deck." }
-        ] },
-        { role: "popup", content: "That is the deck as a chat experience: learn to see waste, relate it to workload quality, inspect real code, and leave with backlog-ready actions." }
-      ]
-    };
+    let chatData = null;
 
     const State = Object.freeze({ IDLE: "idle", THINKING: "thinking", STREAMING: "streaming", POPUP: "popup", COMPLETE: "complete" });
     const messages = document.getElementById("messages");
@@ -229,24 +158,150 @@ static jlong user_thread_cpu_time(Thread* thread) {
     const progressLabel = document.getElementById("progress-label");
     const fakeInput = document.getElementById("fake-input");
     const controls = document.getElementById("controls");
-    document.getElementById("demo-title").textContent = chatData.demoTitle;
-    document.getElementById("model-label").textContent = chatData.model;
-
+    const mainEl = document.querySelector("main");
+    const toolsMenuBtn = document.getElementById("tools-menu-btn");
+    const toolsMenu = document.getElementById("tools-menu");
+    const editModeBtn = document.getElementById("edit-mode-btn");
+    const saveJsonBtn = document.getElementById("save-json-btn");
+    const saveStatus = document.getElementById("save-status");
+    const editorOverlay = document.getElementById("editor-overlay");
+    const editorTitle = document.getElementById("editor-title");
+    const editorMeta = document.getElementById("editor-meta");
+    const editorField = document.getElementById("editor-field");
+    const editorSaveBtn = document.getElementById("editor-save-btn");
+    const editorCancelBtn = document.getElementById("editor-cancel-btn");
     let step = 0;
     let appState = State.IDLE;
     let thinkTimer = null;
     let popupTimer = null;
-    let popupReadyTimer = null;
     let streamTimer = null;
     let currentStreamId = 0;
     let sidebarFocusIndex = null;
-
+    let editMode = false;
+    let editingStepIndex = null;
+    let activeAssistantItem = null;
+    let activeAssistantContentEl = null;
+    let activeSpeechToken = 0;
+    let completedSpeechToken = 0;
+    let currentUtterance = null;
+    let selectedVoice = null;
     const clearTimer = (timer) => { if (timer) clearTimeout(timer); return null; };
-    const scrollBottom = () => requestAnimationFrame(() => { messages.scrollTop = messages.scrollHeight; });
+    const scrollBottom = (passes = 1) => {
+      requestAnimationFrame(() => {
+        messages.scrollTop = messages.scrollHeight;
+        if (passes > 1) scrollBottom(passes - 1);
+      });
+    };
+    function keepScrolledToBottom(durationMs = 1200, intervalMs = 120) {
+      const started = performance.now();
+      function tick() {
+        messages.scrollTop = messages.scrollHeight;
+        if (performance.now() - started < durationMs) {
+          setTimeout(() => requestAnimationFrame(tick), intervalMs);
+        }
+      }
+      requestAnimationFrame(tick);
+    }
     const esc = (text) => text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
     const attr = (text) => esc(String(text)).replace(/"/g, "&quot;");
     const inline = (text) => text.replace(/\*\*\*(.+?)\*\*\*/g, "<strong><em>$1</em></strong>").replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>").replace(/\*(.+?)\*/g, "<em>$1</em>").replace(/`([^`]+)`/g, "<code>$1</code>");
     const truncate = (text, max = 58) => text.length <= max ? text : `${text.slice(0, max - 3).trimEnd()}...`;
+    const speechSupported = "speechSynthesis" in window && "SpeechSynthesisUtterance" in window;
+
+    function selectPreferredVoice() {
+      if (!speechSupported) return null;
+      const voices = window.speechSynthesis.getVoices();
+      if (!voices.length) return null;
+      return voices.find((voice) => /microsoft|edge/i.test(voice.name) && /female|aria|jenny|sara|libby|sonia|natasha|ava/i.test(voice.name) && /^en/i.test(voice.lang))
+        || voices.find((voice) => /^en/i.test(voice.lang) && /female|aria|jenny|sara|libby|sonia|natasha|ava/i.test(voice.name))
+        || voices.find((voice) => /microsoft|edge/i.test(voice.name) && /^en/i.test(voice.lang))
+        || voices.find((voice) => /^en/i.test(voice.lang))
+        || voices[0];
+    }
+
+    function stripSpeechText(text = "") {
+      return text
+        .replace(/```[\s\S]*?```/g, " ")
+        .replace(/`([^`]+)`/g, "$1")
+        .replace(/\*\*\*(.+?)\*\*\*/g, "$1")
+        .replace(/\*\*(.+?)\*\*/g, "$1")
+        .replace(/\*(.+?)\*/g, "$1")
+        .replace(/^[-*]\s+/gm, "")
+        .replace(/^\d+\.\s+/gm, "")
+        .replace(/^>\s+/gm, "")
+        .replace(/\s+/g, " ")
+        .trim();
+    }
+
+    function estimateSpeechRate(text = "") {
+      const words = stripSpeechText(text).split(/\s+/).filter(Boolean).length || 1;
+      const tokens = text.match(/\S+\s*/g) || [text];
+      const streamMs = Math.max(1, tokens.reduce((total, token) => {
+        const trimmed = token.trim();
+        const delay = /[.!?]$/.test(trimmed) ? 110 : /[,;:]$/.test(trimmed) ? 70 : 34;
+        return total + delay;
+      }, 0));
+      const wordsPerMinute = (words / streamMs) * 60000;
+      return Math.max(0.78, Math.min(1.35, wordsPerMinute / 190));
+    }
+
+    function cancelAssistantSpeech(markCompleted = false) {
+      if (!speechSupported) return;
+      if (markCompleted) completedSpeechToken = activeSpeechToken;
+      currentUtterance = null;
+      window.speechSynthesis.cancel();
+    }
+
+    function speakAssistantText(item) {
+      const speechText = stripSpeechText(item.content || "");
+      const token = ++activeSpeechToken;
+      completedSpeechToken = 0;
+      if (!speechSupported || !speechText) return token;
+      cancelAssistantSpeech(false);
+      const utterance = new SpeechSynthesisUtterance(speechText);
+      selectedVoice = selectedVoice || selectPreferredVoice();
+      if (selectedVoice) {
+        utterance.voice = selectedVoice;
+        utterance.lang = selectedVoice.lang;
+      } else {
+        utterance.lang = "en-US";
+      }
+      utterance.rate = estimateSpeechRate(item.content || "");
+      utterance.pitch = 1;
+      utterance.volume = 1;
+      utterance.onend = () => {
+        if (activeSpeechToken !== token) return;
+        completedSpeechToken = token;
+        document.dispatchEvent(new CustomEvent("assistant-speech-done", { detail: { token } }));
+      };
+      utterance.onerror = () => {
+        if (activeSpeechToken !== token) return;
+        completedSpeechToken = token;
+        document.dispatchEvent(new CustomEvent("assistant-speech-done", { detail: { token } }));
+      };
+      currentUtterance = utterance;
+      window.speechSynthesis.speak(utterance);
+      return token;
+    }
+
+    function hasVideo(media = []) {
+      return (media || []).some((item) => item?.type === "video");
+    }
+
+    function activateAssistantVideosAfterSpeech(scope, speechToken) {
+      const startPlayback = () => setTimeout(() => activateAutoplayVideos(scope), 1000);
+      if (!hasVideo(activeAssistantItem?.media) && !scope.querySelector("video")) return;
+      if (!speechSupported || completedSpeechToken === speechToken) {
+        startPlayback();
+        return;
+      }
+      const handler = (event) => {
+        if (event.detail?.token !== speechToken) return;
+        document.removeEventListener("assistant-speech-done", handler);
+        startPlayback();
+      };
+      document.addEventListener("assistant-speech-done", handler);
+    }
 
     function renderMarkdown(raw) {
       const lines = raw.split("\n");
@@ -287,11 +342,46 @@ static jlong user_thread_cpu_time(Thread* thread) {
       const cards = media.map((item) => {
         const caption = item.caption ? `<div class="media-caption">${esc(item.caption)}</div>` : "";
         if (item.type === "video") {
-          return `<figure class="media-card"><video controls preload="metadata" src="${attr(item.src)}"></video>${caption}</figure>`;
+          return `<figure class="media-card"><video controls playsinline preload="metadata" data-autoplay-once="true" src="${attr(item.src)}"></video>${caption}</figure>`;
         }
         return `<figure class="media-card"><img src="${attr(item.src)}" alt="${attr(item.alt || item.caption || "slide media")}">${caption}</figure>`;
       });
       return `<div class="media-stack">${cards.join("")}</div>`;
+    }
+
+    function activateAutoplayVideos(scope = document) {
+      scope.querySelectorAll('video[data-autoplay-once="true"]:not([data-autoplay-done="true"])').forEach((video) => {
+        const playVideo = () => {
+          if (video.dataset.autoplayDone === "true") return;
+          video.dataset.autoplayDone = "true";
+          video.defaultMuted = false;
+          video.muted = false;
+          video.volume = 1;
+          video.currentTime = 0;
+          const playAttempt = video.play();
+          if (playAttempt && typeof playAttempt.catch === "function") {
+            playAttempt.catch(() => {});
+          }
+          keepScrolledToBottom();
+        };
+        const syncScroll = () => keepScrolledToBottom();
+        video.addEventListener("loadedmetadata", syncScroll, { once: true });
+        video.addEventListener("loadeddata", syncScroll, { once: true });
+        video.addEventListener("canplay", syncScroll, { once: true });
+        if (video.readyState >= 2) playVideo();
+        else video.addEventListener("loadeddata", playVideo, { once: true });
+      });
+      scope.querySelectorAll("img").forEach((img) => {
+        const syncScroll = () => keepScrolledToBottom();
+        if (img.complete) syncScroll();
+        else img.addEventListener("load", syncScroll, { once: true });
+      });
+    }
+
+    function pausePlayingVideos(scope = document) {
+      scope.querySelectorAll("video").forEach((video) => {
+        if (!video.paused) video.pause();
+      });
     }
 
     function renderCode(code = []) {
@@ -314,9 +404,118 @@ static jlong user_thread_cpu_time(Thread* thread) {
       return `${renderAssistantText(item.content || "", item.slide)}${renderMedia(item.media)}${renderCode(item.code)}`;
     }
 
+    function finishAssistantStep() {
+      sidebarFocusIndex = null;
+      activeAssistantItem = null;
+      activeAssistantContentEl = null;
+      step += 1;
+      appState = State.IDLE;
+      syncProgress();
+      syncInputState();
+      if (step >= chatData.steps.length) completeDemo();
+    }
+
+    function renderEditButton(stepIndex) {
+      if (!editMode || stepIndex == null || stepIndex < 0) return "";
+      return `<button class="edit-step-btn" type="button" data-step-edit="${stepIndex}">Edit</button>`;
+    }
+
+    function serializeChatData() {
+      return JSON.stringify(chatData, null, 2);
+    }
+
+    function updateSaveStatus(text, isLinked = false) {
+      saveStatus.textContent = text;
+      saveStatus.style.color = isLinked ? "#c6f7ea" : "";
+    }
+
+    function setToolsMenu(open) {
+      toolsMenu.classList.toggle("visible", open);
+    }
+
+    function downloadJson() {
+      const blob = new Blob([serializeChatData()], { type: "application/json" });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = "chatData.json";
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      URL.revokeObjectURL(url);
+    }
+
+    function saveJsonAction() {
+      downloadJson();
+      updateSaveStatus("Exported JSON", true);
+    }
+
+    function popupStepIndex() {
+      if (appState !== State.POPUP) return null;
+      return Math.max(0, step - 1);
+    }
+
+    function openEditor(stepIndex) {
+      const item = chatData.steps[stepIndex];
+      if (!item) return;
+      editingStepIndex = stepIndex;
+      editorTitle.textContent = `Edit Step ${stepIndex + 1}`;
+      editorMeta.textContent = `${item.role}${item.slide ? ` | ${item.slide}` : ""}`;
+      editorField.value = item.content || "";
+      editorOverlay.classList.add("visible");
+      editorField.focus();
+      editorField.setSelectionRange(editorField.value.length, editorField.value.length);
+    }
+
+    function closeEditor() {
+      editingStepIndex = null;
+      editorOverlay.classList.remove("visible");
+    }
+
+    function refreshCurrentView() {
+      const activePopupIndex = popupStepIndex();
+      thinkTimer = clearTimer(thinkTimer);
+      popupTimer = clearTimer(popupTimer);
+      stopStreaming();
+      cancelAssistantSpeech(true);
+      document.getElementById("popup-overlay")?.remove();
+      document.querySelectorAll(".badge, .restart-btn").forEach((el) => el.remove());
+      rebuildTo(step);
+      syncProgress();
+      if (activePopupIndex != null) {
+        appState = State.POPUP;
+        setButton("Waiting...", false);
+        fakeInput.textContent = "Presenter moment in progress...";
+        showPopup(chatData.steps[activePopupIndex]);
+        return;
+      }
+      if (step >= chatData.steps.length) {
+        completeDemo();
+        return;
+      }
+      appState = State.IDLE;
+      syncInputState();
+    }
+
+    function saveStepEdit() {
+      if (editingStepIndex == null) return;
+      chatData.steps[editingStepIndex].content = editorField.value;
+      buildSidebar();
+      closeEditor();
+      refreshCurrentView();
+      updateSaveStatus("Unsaved changes", true);
+    }
+
+    function toggleEditMode() {
+      editMode = !editMode;
+      editModeBtn.classList.toggle("active", editMode);
+      editModeBtn.textContent = editMode ? "Edit Mode On" : "Edit Mode";
+      refreshCurrentView();
+    }
+
     function popupInner(item, inlineCard = false) {
       const button = inlineCard ? "" : `<div><button class="popup-btn" id="popup-btn" type="button" disabled>Continue</button></div>`;
-      return `<div class="${inlineCard ? "popup-inline" : "popup-card"}"><div class="robot speaking" id="popup-robot"><div class="mouth"></div></div><div class="popup-text">${esc(item.content)}</div>${inlineCard ? "" : `<div class="status"><span class="status-dot" id="popup-status-dot"></span><span id="popup-status-text">Presenting...</span></div>${button}`}</div>`;
+      return `<div class="${inlineCard ? "popup-inline" : "popup-card"}">${renderEditButton(item.__stepIndex)}<div class="popup-text">${esc(item.content)}</div>${renderMedia(item.media)}${inlineCard ? "" : button}</div>`;
     }
 
     function setButton(label, disabled) {
@@ -325,8 +524,10 @@ static jlong user_thread_cpu_time(Thread* thread) {
     }
 
     function syncSidebar() {
-      const activeIndex = sidebarFocusIndex ?? Math.min(step, chatData.steps.length - 1);
+      const activeIndex = sidebarFocusIndex ?? Math.max(0, Math.min(step, chatData.steps.length - 1));
       [...sidebar.children].forEach((item, index) => item.classList.toggle("active", index === activeIndex));
+      const activeItem = sidebar.children[activeIndex];
+      if (activeItem) activeItem.scrollIntoView({ block: "nearest" });
     }
 
     function syncProgress() {
@@ -371,19 +572,20 @@ static jlong user_thread_cpu_time(Thread* thread) {
       messages.innerHTML = `<div class="welcome"><div><h2>What can I help with?</h2><p>Press <strong>Start Demo</strong> to begin the conversation.</p></div></div>`;
     }
 
-    function appendUser(text) {
+    function appendUser(text, stepIndex = null) {
       const el = document.createElement("div");
       el.className = "message user";
-      el.innerHTML = `<div class="bubble">${esc(text)}</div>`;
+      el.innerHTML = `<div class="bubble">${renderEditButton(stepIndex)}${esc(text)}</div>`;
       messages.appendChild(el);
       scrollBottom();
     }
 
-    function appendPopupInline(item) {
+    function appendPopupInline(item, stepIndex = null) {
       const el = document.createElement("div");
       el.className = "message popup";
-      el.innerHTML = popupInner(item, true);
+      el.innerHTML = popupInner({ ...item, __stepIndex: stepIndex }, true);
       messages.appendChild(el);
+      activateAutoplayVideos(el);
       scrollBottom();
     }
 
@@ -394,18 +596,42 @@ static jlong user_thread_cpu_time(Thread* thread) {
       el.innerHTML = `<div class="avatar">AI</div><div class="content"><div class="typing"><span></span><span></span><span></span></div></div>`;
       messages.appendChild(el);
       scrollBottom();
-      const current = chatData.steps[step];
+      const current = { ...chatData.steps[step], __stepIndex: step };
+      activeAssistantItem = current;
+      activeAssistantContentEl = null;
       thinkTimer = setTimeout(() => revealAssistant(current), current.thinkingDelay ?? chatData.thinkingDelay);
     }
 
-    function revealAssistant(item) {
+    function startAssistantStep(item, stepIndex) {
+      sidebarFocusIndex = null;
+      const current = { ...item, __stepIndex: stepIndex };
+      activeAssistantItem = current;
+      activeAssistantContentEl = null;
+      appState = State.THINKING;
+      setButton("...", true);
+      fakeInput.textContent = `${chatData.model} is thinking...`;
+      thinkTimer = setTimeout(() => showTyping(), chatData.messageDelay);
+    }
+
+    function revealAssistant(item, immediate = false) {
       const content = item.content || "";
+      const speechToken = speakAssistantText(item);
       document.getElementById("typing-bubble")?.remove();
       const wrapper = document.createElement("div");
       wrapper.className = "message";
       wrapper.innerHTML = `<div class="avatar">AI</div><div class="content"></div>`;
       messages.appendChild(wrapper);
       const contentEl = wrapper.querySelector(".content");
+      activeAssistantItem = item;
+      activeAssistantContentEl = contentEl;
+      if (immediate) {
+        contentEl.innerHTML = `${renderEditButton(item.__stepIndex)}${renderAssistantFull(item)}`;
+        if (hasVideo(item.media)) activateAssistantVideosAfterSpeech(wrapper, speechToken);
+        else activateAutoplayVideos(wrapper);
+        keepScrolledToBottom();
+        finishAssistantStep();
+        return;
+      }
       const tokens = content.match(/\S+\s*/g) || [content];
       const streamId = ++currentStreamId;
       let index = 0;
@@ -420,16 +646,15 @@ static jlong user_thread_cpu_time(Thread* thread) {
         index += 1;
         if (rendered !== snapshot) {
           snapshot = rendered;
-          contentEl.innerHTML = renderAssistantText(rendered, item.slide);
+          contentEl.innerHTML = `${renderEditButton(item.__stepIndex)}${renderAssistantText(rendered, item.slide)}`;
           scrollBottom();
         }
         if (index >= tokens.length) {
-          contentEl.innerHTML = renderAssistantFull(item);
-          step += 1;
-          appState = State.IDLE;
-          syncProgress();
-          syncInputState();
-          if (step >= chatData.steps.length) completeDemo();
+          contentEl.innerHTML = `${renderEditButton(item.__stepIndex)}${renderAssistantFull(item)}`;
+          if (hasVideo(item.media)) activateAssistantVideosAfterSpeech(wrapper, speechToken);
+          else activateAutoplayVideos(wrapper);
+          keepScrolledToBottom();
+          finishAssistantStep();
           return;
         }
         const trimmed = tokens[index - 1].trim();
@@ -446,9 +671,20 @@ static jlong user_thread_cpu_time(Thread* thread) {
       document.getElementById("typing-bubble")?.remove();
     }
 
-    function popupDelay(text) {
-      const words = text.trim().split(/\s+/).filter(Boolean).length;
-      return Math.max(1400, Math.min(3200, 700 + words * 180));
+    function flushAssistantResponse() {
+      if (appState === State.THINKING && step < chatData.steps.length && chatData.steps[step].role === "assistant") {
+        thinkTimer = clearTimer(thinkTimer);
+        revealAssistant({ ...chatData.steps[step], __stepIndex: step }, true);
+        return true;
+      }
+      if (appState === State.STREAMING && activeAssistantItem && activeAssistantContentEl) {
+        stopStreaming();
+        activeAssistantContentEl.innerHTML = `${renderEditButton(activeAssistantItem.__stepIndex)}${renderAssistantFull(activeAssistantItem)}`;
+        activateAutoplayVideos(activeAssistantContentEl.closest(".message") || messages);
+        finishAssistantStep();
+        return true;
+      }
+      return false;
     }
 
     function showPopup(item) {
@@ -456,28 +692,20 @@ static jlong user_thread_cpu_time(Thread* thread) {
       overlay.className = "popup-overlay";
       overlay.id = "popup-overlay";
       overlay.innerHTML = popupInner(item);
-      document.body.appendChild(overlay);
+      mainEl.appendChild(overlay);
+      activateAutoplayVideos(overlay);
       requestAnimationFrame(() => overlay.classList.add("visible"));
-      const robot = overlay.querySelector("#popup-robot");
-      const statusDot = overlay.querySelector("#popup-status-dot");
-      const statusText = overlay.querySelector("#popup-status-text");
       const popupBtn = overlay.querySelector("#popup-btn");
       popupBtn.addEventListener("click", dismissPopup);
-      popupReadyTimer = clearTimer(popupReadyTimer);
-      popupReadyTimer = setTimeout(() => {
-        robot.classList.remove("speaking");
-        statusDot.style.animation = "none";
-        statusText.textContent = "Click Continue when ready";
-        popupBtn.disabled = false;
-        popupBtn.focus();
-        popupReadyTimer = null;
-      }, popupDelay(item.content));
+      popupBtn.disabled = false;
+      popupBtn.focus();
     }
 
-    function dismissPopup() {
-      popupReadyTimer = clearTimer(popupReadyTimer);
+    function dismissPopup(advanceAfter = true) {
       const overlay = document.getElementById("popup-overlay");
       if (!overlay) return;
+      sidebarFocusIndex = null;
+      pausePlayingVideos(overlay);
       overlay.classList.remove("visible");
       popupTimer = clearTimer(popupTimer);
       popupTimer = setTimeout(() => {
@@ -485,8 +713,24 @@ static jlong user_thread_cpu_time(Thread* thread) {
         popupTimer = null;
         appState = State.IDLE;
         syncInputState();
+        scrollBottom();
+        if (advanceAfter && step < chatData.steps.length) {
+          advance();
+          return;
+        }
         if (step >= chatData.steps.length) completeDemo();
       }, 280);
+    }
+
+    function continueAction() {
+      cancelAssistantSpeech(true);
+      pausePlayingVideos(messages);
+      if (appState === State.POPUP) {
+        dismissPopup(true);
+        return;
+      }
+      if (flushAssistantResponse()) return;
+      advance();
     }
 
     function advance() {
@@ -497,26 +741,27 @@ static jlong user_thread_cpu_time(Thread* thread) {
       const item = chatData.steps[step];
       if (item.role === "popup") {
         appState = State.POPUP;
-        appendPopupInline(item);
+        appendPopupInline(item, step);
         step += 1;
         syncProgress();
-        setButton("Waiting...", true);
+        setButton("Waiting...", false);
         fakeInput.textContent = "Presenter moment in progress...";
-        showPopup(item);
+        showPopup({ ...item, __stepIndex: step - 1 });
         return;
       }
       if (item.role === "user") {
-        appendUser(item.content);
+        appendUser(item.content, step);
         step += 1;
         syncProgress();
         if (step < chatData.steps.length && chatData.steps[step].role === "assistant") {
-          appState = State.THINKING;
-          setButton("...", true);
-          fakeInput.textContent = `${chatData.model} is thinking...`;
-          thinkTimer = setTimeout(showTyping, chatData.messageDelay);
+          startAssistantStep(chatData.steps[step], step);
         } else {
           syncInputState();
         }
+        return;
+      }
+      if (item.role === "assistant") {
+        startAssistantStep(item, step);
       }
     }
 
@@ -526,14 +771,15 @@ static jlong user_thread_cpu_time(Thread* thread) {
       messages.innerHTML = "";
       for (let i = 0; i < targetStep; i += 1) {
         const item = chatData.steps[i];
-        if (item.role === "user") appendUser(item.content);
+        if (item.role === "user") appendUser(item.content, i);
         if (item.role === "assistant") {
           const wrapper = document.createElement("div");
           wrapper.className = "message";
-          wrapper.innerHTML = `<div class="avatar">AI</div><div class="content">${renderAssistantFull(item)}</div>`;
+          wrapper.innerHTML = `<div class="avatar">AI</div><div class="content">${renderEditButton(i)}${renderAssistantFull(item)}</div>`;
           messages.appendChild(wrapper);
+          activateAutoplayVideos(wrapper);
         }
-        if (item.role === "popup") appendPopupInline(item);
+        if (item.role === "popup") appendPopupInline(item, i);
       }
       scrollBottom();
     }
@@ -542,17 +788,25 @@ static jlong user_thread_cpu_time(Thread* thread) {
       if (targetStep < 0 || targetStep >= chatData.steps.length) return;
       thinkTimer = clearTimer(thinkTimer);
       popupTimer = clearTimer(popupTimer);
-      popupReadyTimer = clearTimer(popupReadyTimer);
       stopStreaming();
+      cancelAssistantSpeech(true);
       document.getElementById("popup-overlay")?.remove();
       document.querySelectorAll(".badge, .restart-btn").forEach((el) => el.remove());
+      const targetItem = chatData.steps[targetStep];
       const renderedSteps = Math.min(targetStep + 1, chatData.steps.length);
       step = renderedSteps;
-      appState = State.IDLE;
+      appState = targetItem.role === "popup" ? State.POPUP : State.IDLE;
       sidebarFocusIndex = targetStep;
       rebuildTo(renderedSteps);
       syncProgress();
-      syncInputState();
+      if (targetItem.role === "popup") {
+        setButton("Waiting...", false);
+        fakeInput.textContent = "Presenter moment in progress...";
+        showPopup({ ...targetItem, __stepIndex: targetStep });
+      } else {
+        syncInputState();
+      }
+      continueBtn.focus({ preventScroll: true });
     }
 
     function completeDemo() {
@@ -579,8 +833,10 @@ static jlong user_thread_cpu_time(Thread* thread) {
     function restartDemo() {
       thinkTimer = clearTimer(thinkTimer);
       popupTimer = clearTimer(popupTimer);
-      popupReadyTimer = clearTimer(popupReadyTimer);
       stopStreaming();
+      cancelAssistantSpeech(true);
+      activeAssistantItem = null;
+      activeAssistantContentEl = null;
       step = 0;
       appState = State.IDLE;
       sidebarFocusIndex = null;
@@ -593,20 +849,78 @@ static jlong user_thread_cpu_time(Thread* thread) {
       fakeInput.textContent = "Ask ChatGPT anything...";
     }
 
-    continueBtn.addEventListener("click", advance);
-    document.addEventListener("keydown", (event) => {
+    continueBtn.addEventListener("click", continueAction);
+    toolsMenuBtn.addEventListener("click", (event) => {
+      event.stopPropagation();
+      setToolsMenu(!toolsMenu.classList.contains("visible"));
+    });
+    editModeBtn.addEventListener("click", toggleEditMode);
+    saveJsonBtn.addEventListener("click", saveJsonAction);
+    editorSaveBtn.addEventListener("click", saveStepEdit);
+    editorCancelBtn.addEventListener("click", closeEditor);
+    mainEl.addEventListener("click", (event) => {
+      const button = event.target.closest("[data-step-edit]");
+      if (!button) return;
+      event.preventDefault();
+      event.stopPropagation();
+      openEditor(Number(button.dataset.stepEdit));
+    });
+    function handleGlobalKeydown(event) {
+      if (editorOverlay.classList.contains("visible")) {
+        if (event.key === "Escape") { closeEditor(); return; }
+        if ((event.ctrlKey || event.metaKey) && event.key === "Enter") {
+          event.preventDefault();
+          saveStepEdit();
+        }
+        return;
+      }
       if (event.key === "r" || event.key === "R") { restartDemo(); return; }
       if (event.key === " " || event.key === "ArrowRight") {
-        if (event.target === continueBtn) return;
+        const buttonTarget = event.target?.closest?.("button");
+        if (buttonTarget && buttonTarget !== continueBtn) {
+          event.preventDefault();
+          continueBtn.focus({ preventScroll: true });
+          continueAction();
+          return;
+        }
+        if (event.target?.matches?.("input, textarea, select, [contenteditable='true'], [contenteditable='']")) return;
         event.preventDefault();
-        advance();
+        continueAction();
       }
+    }
+    window.addEventListener("keydown", handleGlobalKeydown, true);
+    document.addEventListener("click", (event) => {
+      if (!toolsMenu.contains(event.target) && event.target !== toolsMenuBtn) setToolsMenu(false);
     });
 
-    buildSidebar();
-    showWelcome();
-    syncProgress();
-    setButton("Start Demo", false);
+    async function initApp() {
+      try {
+        if (speechSupported) {
+          selectedVoice = selectPreferredVoice();
+          window.speechSynthesis.addEventListener?.("voiceschanged", () => {
+            selectedVoice = selectPreferredVoice();
+          });
+        }
+        const response = await fetch("./chatData.json", { cache: "no-store" });
+        if (!response.ok) throw new Error(`HTTP ${response.status}`);
+        chatData = await response.json();
+        document.getElementById("demo-title").textContent = chatData.demoTitle;
+        document.getElementById("model-label").textContent = chatData.model;
+        updateSaveStatus("Loaded chatData.json", true);
+        buildSidebar();
+        showWelcome();
+        syncProgress();
+        setButton("Start Demo", false);
+      } catch (error) {
+        messages.innerHTML = `<div class="welcome"><div><h2>Unable to load chatData.json</h2><p>Run <strong>npm start</strong> in this folder, then open <strong>http://localhost:3000/chatsim.html</strong>.</p></div></div>`;
+        setButton("Unavailable", true);
+        fakeInput.textContent = "chatData.json not loaded";
+        updateSaveStatus("Load failed");
+      }
+    }
+
+    initApp();
   </script>
 </body>
 </html>
+
