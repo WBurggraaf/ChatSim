@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ChatSim Demo</title>
+  <style>
+    :root {
+      --bg: #212121;
+      --panel: #111315;
+      --card: rgba(255,255,255,0.04);
+      --border: rgba(255,255,255,0.09);
+      --text: #f1f3f5;
+      --muted: #a0a8b3;
+      --accent: #10a37f;
+      --accent-hover: #0c8767;
+    }
+    * { box-sizing: border-box; }
+    html, body { margin: 0; height: 100%; font-family: "Segoe UI", Arial, sans-serif; background: var(--bg); color: var(--text); }
+    body { display: flex; overflow: hidden; }
+    aside { width: 250px; background: var(--panel); border-right: 1px solid var(--border); padding: 16px; display: flex; flex-direction: column; gap: 12px; }
+    .sidebar-list { display: flex; flex-direction: column; gap: 8px; overflow: auto; }
+    .sidebar-item { width: 100%; border: 1px solid transparent; background: transparent; color: var(--muted); text-align: left; border-radius: 12px; padding: 10px; cursor: pointer; }
+    .sidebar-item.active, .sidebar-item:hover { color: var(--text); background: rgba(255,255,255,0.04); border-color: rgba(16,163,127,0.25); }
+    .role { display: block; font-size: 11px; text-transform: uppercase; letter-spacing: .08em; margin-bottom: 4px; }
+    main { flex: 1; display: flex; flex-direction: column; min-width: 0; }
+    header { height: 60px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; padding: 0 18px; }
+    .pill { border: 1px solid var(--border); padding: 9px 14px; border-radius: 999px; }
+    #messages { flex: 1; overflow: auto; padding: 24px; }
+    .welcome { min-height: 100%; display: grid; place-items: center; text-align: center; color: var(--muted); }
+    .welcome h2 { color: var(--text); font-size: clamp(28px, 4vw, 38px); margin: 0 0 8px; }
+    .message { display: flex; gap: 12px; margin-bottom: 18px; }
+    .message.user { justify-content: flex-end; }
+    .avatar { width: 34px; height: 34px; display: grid; place-items: center; border-radius: 12px; background: rgba(16,163,127,.15); border: 1px solid rgba(16,163,127,.24); color: #d9fff3; font-size: 13px; font-weight: 700; }
+    .bubble, .content { max-width: min(760px, 82%); border-radius: 18px; padding: 14px 16px; line-height: 1.6; }
+    .bubble { background: #2f2f2f; border: 1px solid rgba(255,255,255,.05); }
+    .content { background: var(--card); border: 1px solid var(--border); }
+    .content p, .content ul, .content ol, .content blockquote { margin: 0 0 12px; }
+    .content p:last-child, .content ul:last-child, .content ol:last-child, .content blockquote:last-child { margin-bottom: 0; }
+    .content ul, .content ol { padding-left: 22px; }
+    .content blockquote { border-left: 3px solid var(--accent); padding-left: 12px; color: #d7e7e3; }
+    .content code { background: rgba(255,255,255,.08); border-radius: 6px; padding: 2px 6px; }
+    .typing { display: inline-flex; gap: 6px; padding: 4px 0; }
+    .typing span, .status-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--muted); animation: pulse 1s infinite ease-in-out; }
+    .typing span:nth-child(2) { animation-delay: .14s; }
+    .typing span:nth-child(3) { animation-delay: .28s; }
+    footer { border-top: 1px solid var(--border); padding: 16px 18px; }
+    .progress { display: none; justify-content: space-between; align-items: center; margin-bottom: 12px; color: var(--muted); font-size: 13px; }
+    .dots { display: flex; gap: 8px; flex-wrap: wrap; }
+    .dot { width: 8px; height: 8px; border-radius: 50%; background: rgba(255,255,255,.18); }
+    .dot.done { background: var(--accent); }
+    .dot.current { background: #fff; }
+    .controls { display: flex; gap: 12px; align-items: center; border: 1px solid var(--border); border-radius: 22px; padding: 14px 16px; background: rgba(58,58,58,.88); }
+    .fake-input { flex: 1; color: var(--muted); }
+    button.primary, .restart-btn, .popup-btn { border: none; border-radius: 12px; background: var(--accent); color: #fff; font-weight: 700; padding: 12px 16px; cursor: pointer; }
+    button.primary:hover, .restart-btn:hover, .popup-btn:hover:not(:disabled) { background: var(--accent-hover); }
+    button.primary:disabled, .popup-btn:disabled { background: rgba(255,255,255,.08); color: var(--muted); cursor: not-allowed; }
+    .hint { color: var(--muted); font-size: 12px; margin-top: 10px; }
+    .badge { color: #c6f7ea; font-weight: 600; }
+    .popup-overlay { position: fixed; inset: 0; background: rgba(9,11,13,.76); backdrop-filter: blur(8px); display: grid; place-items: center; opacity: 0; transition: opacity .28s ease; }
+    .popup-overlay.visible { opacity: 1; }
+    .popup-card { width: min(92vw, 560px); border-radius: 28px; padding: 28px; text-align: center; background: linear-gradient(180deg, rgba(31,35,38,.98), rgba(20,22,24,.98)); border: 1px solid rgba(255,255,255,.08); transform: translateY(18px) scale(.98); transition: transform .28s ease; }
+    .popup-overlay.visible .popup-card { transform: translateY(0) scale(1); }
+    .robot { width: 120px; height: 120px; margin: 0 auto 18px; border-radius: 30px; position: relative; background: linear-gradient(180deg, #203241, #15212b); border: 1px solid rgba(16,163,127,.28); }
+    .robot::before, .robot::after { content: ""; position: absolute; top: 40px; width: 18px; height: 18px; border-radius: 50%; background: #aef7e3; box-shadow: 0 0 18px rgba(16,163,127,.45); }
+    .robot::before { left: 30px; }
+    .robot::after { right: 30px; }
+    .mouth { position: absolute; left: 50%; bottom: 28px; width: 42px; height: 8px; transform: translateX(-50%); border-radius: 999px; background: rgba(174,247,227,.86); }
+    .robot.speaking .mouth { animation: mouth .5s infinite ease-in-out; }
+    .popup-text { font-size: clamp(20px, 3vw, 30px); line-height: 1.35; margin-bottom: 18px; }
+    .status { display: inline-flex; align-items: center; gap: 8px; color: var(--muted); margin-bottom: 18px; }
+    @keyframes pulse { 0%,100% { opacity:.35; transform: translateY(0); } 50% { opacity:1; transform: translateY(-1px); } }
+    @keyframes mouth { 0%,100% { transform: translateX(-50%) scaleY(1); } 50% { transform: translateX(-50%) scaleY(2.4); } }
+    @media (max-width: 900px) { body { flex-direction: column; } aside { width: 100%; max-height: 190px; border-right: none; border-bottom: 1px solid var(--border); } }
+  </style>
+</head>
+<body>
+  <aside>
+    <div>ChatSim Presentation</div>
+    <div class="sidebar-list" id="sidebar"></div>
+  </aside>
+  <main>
+    <header>
+      <div id="demo-title">AI Business Strategy</div>
+      <div class="pill" id="model-label">ChatGPT 4o</div>
+    </header>
+    <div id="messages"></div>
+    <footer>
+      <div class="progress" id="progress"><div class="dots" id="dots"></div><span id="progress-label"></span></div>
+      <div class="controls" id="controls"><span class="fake-input" id="fake-input">Ask ChatGPT anything...</span><button class="primary" id="continue-btn" type="button">Start Demo</button></div>
+      <div class="hint">Press Space or Right Arrow to advance. Press R to restart.</div>
+    </footer>
+  </main>
+  <script>
+    const chatData = {
+      demoTitle: "AI Business Strategy",
+      model: "ChatGPT 4o",
+      thinkingDelay: 2200,
+      messageDelay: 500,
+      steps: [
+        { role: "popup", content: "Hi Wilco! Let's show how AI transforms your business. Press Continue to begin." },
+        { role: "user", content: "What are the most impactful ways AI can transform our business operations?" },
+        { role: "assistant", content: "There are several high-impact areas where AI can genuinely transform how you operate:\n\n**1. Intelligent Process Automation**\nBeyond simple rule-based scripts, AI handles judgment-intensive tasks - processing unstructured documents, managing workflow exceptions, and routing work dynamically based on context.\n\n**2. Predictive Analytics & Forecasting**\nModels trained on your historical data can forecast demand, surface anomalies early, and flag risks before they escalate - giving leadership a meaningful head start.\n\n**3. Customer Experience at Scale**\nReal-time AI personalises every touchpoint - recommendations, pricing, support - at a depth and speed no human team can match, while keeping interactions genuinely relevant.\n\n**4. Institutional Knowledge Management**\nAI makes your organisation's expertise instantly searchable and actionable, cutting onboarding time and decision latency across teams.\n\nWhich of these areas is most pressing for you right now?" },
+        { role: "user", content: "Let's focus on customer experience. How do we get started without disrupting existing systems?" },
+        { role: "assistant", content: "A phased approach is the safest path - it delivers early wins without touching what's already working:\n\n**Phase 1 - Listen (Weeks 1-4)**\nDeploy AI analytics on top of your existing data sources: CRM, support tickets, web behaviour. Zero system changes required. You gain visibility immediately and build the evidence base for Phase 2.\n\n**Phase 2 - Assist (Weeks 5-12)**\nIntroduce AI-powered recommendations alongside your current tools. Support agents see real-time suggestions but stay in full control. Confidence builds, and the model gets better from real feedback.\n\n**Phase 3 - Automate (Month 4+)**\nSelectively automate high-volume, low-complexity interactions - freeing your team for complex, high-value cases where human judgment matters most.\n\n> Key principle: AI should augment your team before it automates your workflows. This drives adoption, builds trust, and dramatically reduces rollout risk.\n\nWould you like a deeper look at any of these phases?" },
+        { role: "user", content: "What KPIs should we track to measure success throughout this rollout?" },
+        { role: "assistant", content: "Track progress across three dimensions so you capture the full picture:\n\n**Customer Impact**\n- CSAT / NPS trend (weekly, not just quarterly)\n- First-contact resolution rate\n- Average handle time\n\n**Operational Efficiency**\n- Cost-per-interaction\n- AI containment rate - the percentage of interactions handled without human escalation\n- Agent productivity (cases closed per hour)\n\n**Business Outcomes**\n- Customer retention and churn rate\n- Revenue attributed to AI-driven upsell or cross-sell recommendations\n- Churn prediction model accuracy (tested against actuals monthly)\n\nFor your 90-day pilot I would recommend anchoring on just two north-star metrics: **first-contact resolution** and **cost-per-interaction**. They are measurable quickly, easy to socialise with leadership, and map directly to ROI." },
+        { role: "popup", content: "That's the demo, Wilco. AI can transform operations with measurable impact. Thanks." }
+      ]
+    };
+
+    const State = Object.freeze({ IDLE: "idle", THINKING: "thinking", STREAMING: "streaming", POPUP: "popup", COMPLETE: "complete" });
+    const messages = document.getElementById("messages");
+    const sidebar = document.getElementById("sidebar");
+    const continueBtn = document.getElementById("continue-btn");
+    const progress = document.getElementById("progress");
+    const dots = document.getElementById("dots");
+    const progressLabel = document.getElementById("progress-label");
+    const fakeInput = document.getElementById("fake-input");
+    const controls = document.getElementById("controls");
+    document.getElementById("demo-title").textContent = chatData.demoTitle;
+    document.getElementById("model-label").textContent = chatData.model;
+
+    let step = 0;
+    let appState = State.IDLE;
+    let thinkTimer = null;
+    let popupTimer = null;
+    let popupReadyTimer = null;
+    let streamTimer = null;
+    let currentStreamId = 0;
+
+    const clearTimer = (timer) => { if (timer) clearTimeout(timer); return null; };
+    const scrollBottom = () => requestAnimationFrame(() => { messages.scrollTop = messages.scrollHeight; });
+    const esc = (text) => text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+    const inline = (text) => text.replace(/\*\*\*(.+?)\*\*\*/g, "<strong><em>$1</em></strong>").replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>").replace(/\*(.+?)\*/g, "<em>$1</em>").replace(/`([^`]+)`/g, "<code>$1</code>");
+    const truncate = (text, max = 58) => text.length <= max ? text : `${text.slice(0, max - 3).trimEnd()}...`;
+
+    function renderMarkdown(raw) {
+      const lines = raw.split("\n");
+      const out = [];
+      let i = 0;
+      const isList = (line) => /^[-*] /.test(line) || /^\d+\.\s/.test(line);
+      const isBlock = (line) => /^[#>]/.test(line) || isList(line);
+      while (i < lines.length) {
+        const t = lines[i].trim();
+        if (!t) { i += 1; continue; }
+        if (t.startsWith("> ")) { out.push(`<blockquote>${inline(esc(t.slice(2)))}</blockquote>`); i += 1; continue; }
+        if (/^[-*] /.test(t)) {
+          const items = [];
+          while (i < lines.length && /^[-*] /.test(lines[i].trim())) { items.push(`<li>${inline(esc(lines[i].trim().replace(/^[-*] /, "")))}</li>`); i += 1; }
+          out.push(`<ul>${items.join("")}</ul>`);
+          continue;
+        }
+        if (/^\d+\.\s/.test(t)) {
+          const items = [];
+          while (i < lines.length && /^\d+\.\s/.test(lines[i].trim())) { items.push(`<li>${inline(esc(lines[i].trim().replace(/^\d+\.\s+/, "")))}</li>`); i += 1; }
+          out.push(`<ol>${items.join("")}</ol>`);
+          continue;
+        }
+        const para = [];
+        while (i < lines.length) {
+          const current = lines[i].trim();
+          if (!current || isBlock(current)) break;
+          para.push(inline(esc(lines[i])));
+          i += 1;
+        }
+        out.push(`<p>${para.join("<br>")}</p>`);
+      }
+      return out.join("\n");
+    }
+
+    function setButton(label, disabled) {
+      continueBtn.textContent = label;
+      continueBtn.disabled = disabled;
+    }
+
+    function syncSidebar() {
+      [...sidebar.children].forEach((item, index) => item.classList.toggle("active", index === Math.min(step, chatData.steps.length - 1)));
+    }
+
+    function syncProgress() {
+      dots.innerHTML = "";
+      chatData.steps.forEach((_, index) => {
+        const dot = document.createElement("span");
+        dot.className = "dot";
+        if (index < step) dot.classList.add("done");
+        else if (index === step) dot.classList.add("current");
+        dots.appendChild(dot);
+      });
+      const users = chatData.steps.filter((item) => item.role === "user").length;
+      const seenUsers = chatData.steps.slice(0, step).filter((item) => item.role === "user").length;
+      progressLabel.textContent = `${seenUsers} / ${users}`;
+      syncSidebar();
+    }
+
+    function syncInputState() {
+      if (appState === State.POPUP) return;
+      if (step >= chatData.steps.length) {
+        setButton("Complete", true);
+        fakeInput.textContent = "Demo complete";
+        return;
+      }
+      setButton("Continue", false);
+      fakeInput.textContent = "Ask ChatGPT anything...";
+    }
+
+    function buildSidebar() {
+      sidebar.innerHTML = "";
+      chatData.steps.forEach((item, index) => {
+        const button = document.createElement("button");
+        button.type = "button";
+        button.className = "sidebar-item";
+        button.innerHTML = `<span class="role">${item.role}</span><span>${index + 1}. ${truncate(item.content.replace(/\s+/g, " "))}</span>`;
+        button.addEventListener("click", () => jumpToStep(index));
+        sidebar.appendChild(button);
+      });
+    }
+
+    function showWelcome() {
+      messages.innerHTML = `<div class="welcome"><div><h2>What can I help with?</h2><p>Press <strong>Start Demo</strong> to begin the conversation.</p></div></div>`;
+    }
+
+    function appendUser(text) {
+      const el = document.createElement("div");
+      el.className = "message user";
+      el.innerHTML = `<div class="bubble">${esc(text)}</div>`;
+      messages.appendChild(el);
+      scrollBottom();
+    }
+
+    function showTyping() {
+      const el = document.createElement("div");
+      el.className = "message";
+      el.id = "typing-bubble";
+      el.innerHTML = `<div class="avatar">AI</div><div class="content"><div class="typing"><span></span><span></span><span></span></div></div>`;
+      messages.appendChild(el);
+      scrollBottom();
+      const current = chatData.steps[step];
+      thinkTimer = setTimeout(() => revealAssistant(current.content), current.thinkingDelay ?? chatData.thinkingDelay);
+    }
+
+    function revealAssistant(content) {
+      document.getElementById("typing-bubble")?.remove();
+      const wrapper = document.createElement("div");
+      wrapper.className = "message";
+      wrapper.innerHTML = `<div class="avatar">AI</div><div class="content"></div>`;
+      messages.appendChild(wrapper);
+      const contentEl = wrapper.querySelector(".content");
+      const tokens = content.match(/\S+\s*/g) || [content];
+      const streamId = ++currentStreamId;
+      let index = 0;
+      let rendered = "";
+      let snapshot = "";
+      appState = State.STREAMING;
+      setButton("Writing...", true);
+      fakeInput.textContent = `${chatData.model} is responding...`;
+      function tick() {
+        if (streamId !== currentStreamId) return;
+        rendered += tokens[index];
+        index += 1;
+        if (rendered !== snapshot) {
+          snapshot = rendered;
+          contentEl.innerHTML = renderMarkdown(rendered);
+          scrollBottom();
+        }
+        if (index >= tokens.length) {
+          contentEl.innerHTML = renderMarkdown(content);
+          step += 1;
+          appState = State.IDLE;
+          syncProgress();
+          syncInputState();
+          if (step >= chatData.steps.length) completeDemo();
+          return;
+        }
+        const trimmed = tokens[index - 1].trim();
+        const delay = /[.!?]$/.test(trimmed) ? 110 : /[,;:]$/.test(trimmed) ? 70 : 34;
+        streamTimer = setTimeout(tick, delay);
+      }
+      tick();
+    }
+
+    function stopStreaming() {
+      currentStreamId += 1;
+      thinkTimer = clearTimer(thinkTimer);
+      streamTimer = clearTimer(streamTimer);
+      document.getElementById("typing-bubble")?.remove();
+    }
+
+    function popupDelay(text) {
+      const words = text.trim().split(/\s+/).filter(Boolean).length;
+      return Math.max(1400, Math.min(3200, 700 + words * 180));
+    }
+
+    function showPopup(item) {
+      const overlay = document.createElement("div");
+      overlay.className = "popup-overlay";
+      overlay.id = "popup-overlay";
+      overlay.innerHTML = `<div class="popup-card"><div class="robot speaking" id="popup-robot"><div class="mouth"></div></div><div class="popup-text">${esc(item.content)}</div><div class="status"><span class="status-dot" id="popup-status-dot"></span><span id="popup-status-text">Presenting...</span></div><div><button class="popup-btn" id="popup-btn" type="button" disabled>Continue</button></div></div>`;
+      document.body.appendChild(overlay);
+      requestAnimationFrame(() => overlay.classList.add("visible"));
+      const robot = overlay.querySelector("#popup-robot");
+      const statusDot = overlay.querySelector("#popup-status-dot");
+      const statusText = overlay.querySelector("#popup-status-text");
+      const popupBtn = overlay.querySelector("#popup-btn");
+      popupBtn.addEventListener("click", dismissPopup);
+      popupReadyTimer = clearTimer(popupReadyTimer);
+      popupReadyTimer = setTimeout(() => {
+        robot.classList.remove("speaking");
+        statusDot.style.animation = "none";
+        statusText.textContent = "Click Continue when ready";
+        popupBtn.disabled = false;
+        popupBtn.focus();
+        popupReadyTimer = null;
+      }, popupDelay(item.content));
+    }
+
+    function dismissPopup() {
+      popupReadyTimer = clearTimer(popupReadyTimer);
+      const overlay = document.getElementById("popup-overlay");
+      if (!overlay) return;
+      overlay.classList.remove("visible");
+      popupTimer = clearTimer(popupTimer);
+      popupTimer = setTimeout(() => {
+        overlay.remove();
+        popupTimer = null;
+        appState = State.IDLE;
+        syncInputState();
+        if (step >= chatData.steps.length) completeDemo();
+      }, 280);
+    }
+
+    function advance() {
+      if (appState !== State.IDLE) return;
+      if (step >= chatData.steps.length) { completeDemo(); return; }
+      progress.style.display = "flex";
+      const item = chatData.steps[step];
+      if (item.role === "popup") {
+        appState = State.POPUP;
+        step += 1;
+        syncProgress();
+        setButton("Waiting...", true);
+        fakeInput.textContent = "Presenter moment in progress...";
+        showPopup(item);
+        return;
+      }
+      if (item.role === "user") {
+        appendUser(item.content);
+        step += 1;
+        syncProgress();
+        if (step < chatData.steps.length && chatData.steps[step].role === "assistant") {
+          appState = State.THINKING;
+          setButton("...", true);
+          fakeInput.textContent = `${chatData.model} is thinking...`;
+          thinkTimer = setTimeout(showTyping, chatData.messageDelay);
+        } else {
+          syncInputState();
+        }
+      }
+    }
+
+    function rebuildTo(targetStep) {
+      showWelcome();
+      if (targetStep === 0) return;
+      messages.innerHTML = "";
+      for (let i = 0; i < targetStep; i += 1) {
+        const item = chatData.steps[i];
+        if (item.role === "user") appendUser(item.content);
+        if (item.role === "assistant") {
+          const wrapper = document.createElement("div");
+          wrapper.className = "message";
+          wrapper.innerHTML = `<div class="avatar">AI</div><div class="content">${renderMarkdown(item.content)}</div>`;
+          messages.appendChild(wrapper);
+        }
+      }
+      scrollBottom();
+    }
+
+    function jumpToStep(targetStep) {
+      if (targetStep < 0 || targetStep >= chatData.steps.length) return;
+      thinkTimer = clearTimer(thinkTimer);
+      popupTimer = clearTimer(popupTimer);
+      popupReadyTimer = clearTimer(popupReadyTimer);
+      stopStreaming();
+      document.getElementById("popup-overlay")?.remove();
+      document.querySelectorAll(".badge, .restart-btn").forEach((el) => el.remove());
+      step = targetStep;
+      appState = State.IDLE;
+      rebuildTo(targetStep);
+      syncProgress();
+      syncInputState();
+    }
+
+    function completeDemo() {
+      if (appState === State.COMPLETE) return;
+      appState = State.COMPLETE;
+      setButton("Complete", true);
+      fakeInput.textContent = "Demo complete";
+      if (!controls.querySelector(".badge")) {
+        const badge = document.createElement("span");
+        badge.className = "badge";
+        badge.textContent = "Demo complete";
+        controls.insertBefore(badge, continueBtn);
+      }
+      if (!controls.querySelector(".restart-btn")) {
+        const restart = document.createElement("button");
+        restart.type = "button";
+        restart.className = "restart-btn";
+        restart.textContent = "Restart";
+        restart.addEventListener("click", restartDemo);
+        controls.appendChild(restart);
+      }
+    }
+
+    function restartDemo() {
+      thinkTimer = clearTimer(thinkTimer);
+      popupTimer = clearTimer(popupTimer);
+      popupReadyTimer = clearTimer(popupReadyTimer);
+      stopStreaming();
+      step = 0;
+      appState = State.IDLE;
+      document.getElementById("popup-overlay")?.remove();
+      document.querySelectorAll(".badge, .restart-btn").forEach((el) => el.remove());
+      progress.style.display = "none";
+      showWelcome();
+      syncProgress();
+      setButton("Start Demo", false);
+      fakeInput.textContent = "Ask ChatGPT anything...";
+    }
+
+    continueBtn.addEventListener("click", advance);
+    document.addEventListener("keydown", (event) => {
+      if (event.key === "r" || event.key === "R") { restartDemo(); return; }
+      if (event.key === " " || event.key === "ArrowRight") {
+        if (event.target === continueBtn) return;
+        event.preventDefault();
+        advance();
+      }
+    });
+
+    buildSidebar();
+    showWelcome();
+    syncProgress();
+    setButton("Start Demo", false);
+  </script>
+</body>
+</html>
