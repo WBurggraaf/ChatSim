@@ -223,13 +223,82 @@
     {
       "role": "user",
       "stepNumber": "22A",
+      "content": "Can you show that idea in a cloud example?"
+    },
+    {
+      "role": "assistant",
+      "stepNumber": "22B",
+      "slide": "AWS Example",
+      "content": "This becomes concrete with AWS. Waste is not abstract here either. It shows up in the infrastructure choices teams make every day.",
+      "media": [
+        {
+          "type": "image",
+          "src": ".pptx_extract/ppt/media/image40.png",
+          "caption": ""
+        }
+      ]
+    },
+    {
+      "role": "user",
+      "stepNumber": "22C",
+      "content": "And where does that choice show up?"
+    },
+    {
+      "role": "assistant",
+      "stepNumber": "22D",
+      "slide": "Instance Types",
+      "content": "It starts with instance selection. The platform gives you many shapes, but that flexibility also makes overprovisioning easy.",
+      "media": [
+        {
+          "type": "image",
+          "src": ".pptx_extract/ppt/media/image41.png",
+          "caption": ""
+        }
+      ]
+    },
+    {
+      "role": "user",
+      "stepNumber": "22E",
+      "content": "Any caveat before the comparison?"
+    },
+    {
+      "role": "assistant",
+      "stepNumber": "22F",
+      "slide": "Comparison Caveat",
+      "content": "In this story, the terms virtual machines, containers, and pods are treated as interchangeable. The point is the waste pattern, not the infrastructure taxonomy."
+    },
+    {
+      "role": "user",
+      "stepNumber": "22G",
+      "content": "What happens at low utilization?"
+    },
+    {
+      "role": "assistant",
+      "stepNumber": "22H",
+      "slide": "25% Utilization",
+      "content": "At 25% utilization, a shared 16-vCPU AWS instance uses about 340 kWh per year, while a dedicated on-prem 16-core server uses about 1,600 kWh per year."
+    },
+    {
+      "role": "user",
+      "stepNumber": "22I",
+      "content": "And what about higher utilization?"
+    },
+    {
+      "role": "assistant",
+      "stepNumber": "22J",
+      "slide": "75% Utilization",
+      "content": "At 75% utilization, a shared 16-vCPU AWS instance uses about 640 kWh per year, while a dedicated on-prem 16-core server is around 2,700 kWh per year."
+    },
+    {
+      "role": "user",
+      "stepNumber": "22K",
       "content": "And how do you quantify that?"
     },
     {
       "role": "assistant",
       "stepNumber": 23,
       "slide": "Consolidation Example",
-      "content": "Then you quantify it. Underused workloads burn energy and money, while consolidation can save cost and cut emissions at the same time."
+      "content": "Then you quantify it. Consolidating three 25% VMs into one 75% VM can save roughly two full instance costs, or about 13,000 euros per year with m5.4xlarge on-demand pricing."
     },
     {
       "role": "user",
@@ -297,13 +366,13 @@
     {
       "role": "user",
       "stepNumber": "32A",
-      "content": "What do the follow-up slides reinforce?"
+      "content": "What does that reinforce?"
     },
     {
       "role": "assistant",
       "stepNumber": 33,
       "slide": "Workload Quality Sequence",
-      "content": "The follow-up slides reinforce the same point: healthy workloads balance value, efficiency, and operational quality, not just raw activity."
+      "content": "It reinforces the same point: healthy workloads balance value, efficiency, and operational quality, not just raw activity."
     },
     {
       "role": "user",
@@ -329,9 +398,29 @@
     },
     {
       "role": "assistant",
+      "stepNumber": "35B",
+      "slide": "OpenJDK Issue",
+      "presentationStyle": "popup",
+      "content": "It starts with a concrete OpenJDK issue. That makes the case specific immediately, not abstract.",
+      "media": [
+        {
+          "type": "image",
+          "src": ".pptx_extract/ppt/media/image47.png",
+          "caption": ""
+        }
+      ]
+    },
+    {
+      "role": "user",
+      "stepNumber": "35C",
+      "content": "Why does it catch attention?"
+    },
+    {
+      "role": "assistant",
       "stepNumber": 36,
       "slide": "Primeagen",
-      "content": "The case starts with something recognizable: ThePrimeagen and a story engineers can immediately relate to.",
+      "presentationStyle": "popup",
+      "content": "Because it comes through someone engineers already recognize. That gives the story instant credibility and familiarity.",
       "media": [
         {
           "type": "image",
@@ -343,12 +432,32 @@
     {
       "role": "user",
       "stepNumber": "36A",
-      "content": "How do you introduce that case?"
+      "content": "What in the story stands out?"
+    },
+    {
+      "role": "assistant",
+      "stepNumber": "36B",
+      "slide": "Commit Log",
+      "presentationStyle": "popup",
+      "content": "A tiny commit in a long stream of work suddenly matters. That is exactly the point: small code can hide very large waste.",
+      "media": [
+        {
+          "type": "image",
+          "src": ".pptx_extract/ppt/media/image49.png",
+          "caption": ""
+        }
+      ]
+    },
+    {
+      "role": "user",
+      "stepNumber": "36C",
+      "content": "How do you introduce the concrete case?"
     },
     {
       "role": "assistant",
       "stepNumber": 37,
       "slide": "Code Case Intro",
+      "presentationStyle": "popup",
       "content": "A bug report and a tiny implementation detail become the entry point. That makes the waste feel concrete, not theoretical.",
       "media": [
         {
@@ -367,43 +476,164 @@
       "role": "assistant",
       "stepNumber": 38,
       "slide": "Procfs vs Direct Clock",
-      "content": "The deck then explains the core idea: reading procfs means opening text and parsing it, while direct clock access is simpler and faster."
+      "content": "The core idea is simple: reading procfs means opening text and parsing it, while direct clock access is simpler and faster."
     },
     {
       "role": "user",
       "stepNumber": 39,
-      "content": "What exactly makes the old path expensive?"
+      "content": "What exactly does the old implementation look like?"
     },
     {
       "role": "assistant",
       "stepNumber": 40,
-      "slide": "Old Implementation Visuals",
-      "content": "The visuals show where the work hides: file open, text read, parsing, copies, and formatting. Small code can still create a heavy path.",
-      "media": [
-        {
-          "type": "image",
-          "src": ".pptx_extract/ppt/media/image54.png",
-          "caption": ""
-        }
-      ],
+      "slide": "Old Implementation",
+      "presentationStyle": "popup",
+      "content": "Here is the old procfs-based path. The important thing is not the line count, but the amount of work hidden behind it.",
       "code": [
         {
           "language": "cpp",
-          "caption": "Old procfs-based path reconstructed from the code slides.",
-          "content": "static jlong user_thread_cpu_time(Thread* thread) {\n  pid_t tid = thread->osthread()->thread_id();\n  char* s;\n  char stat[2048];\n  size_t statlen;\n  char proc_name[64];\n  int count;\n  long sys_time, user_time;\n  char cdummy;\n  int idummy;\n  long ldummy;\n  FILE* fp;\n\n  os::snprintf_checked(proc_name, 64, \"/proc/self/task/%d/stat\", tid);\n  fp = os::fopen(proc_name, \"r\");\n  if (fp == nullptr) return -1;\n\n  statlen = fread(stat, 1, 2047, fp);\n  stat[statlen] = '\\0';\n  fclose(fp);\n\n  s = strrchr(stat, ')');\n  if (s == nullptr) return -1;\n  do { s++; } while (s && isspace((unsigned char)*s));\n\n  count = sscanf(s, \"%c %d %d %d %d %d %lu %lu %lu %lu %lu %lu %lu\",\n    &cdummy, &idummy, &idummy, &idummy, &idummy, &idummy,\n    &ldummy, &ldummy, &ldummy, &ldummy, &ldummy,\n    &user_time, &sys_time);\n\n  if (count != 13) return -1;\n  return (jlong)user_time * (1000000000 / os::Posix::clock_tics_per_second());\n}"
+          "caption": "Opening the procfs stat file and reading its contents.",
+          "content": "static jlong user_thread_cpu_time(Thread* thread) {\n  pid_t tid = thread->osthread()->thread_id();\n  char* s;\n  char stat[2048];\n  size_t statlen;\n  char proc_name[64];\n  int count;\n  long sys_time, user_time;\n  char cdummy;\n  int idummy;\n  long ldummy;\n  FILE* fp;\n\n  os::snprintf_checked(proc_name, 64, \"/proc/self/task/%d/stat\", tid);\n  fp = os::fopen(proc_name, \"r\");\n  if (fp == nullptr) return -1;\n\n  statlen = fread(stat, 1, 2047, fp);\n  stat[statlen] = '\\0';\n  fclose(fp);"
+        },
+        {
+          "language": "cpp",
+          "caption": "Skipping the command string, parsing fields, and returning user time.",
+          "content": "  s = strrchr(stat, ')');\n  if (s == nullptr) return -1;\n  do { s++; } while (s && isspace((unsigned char)*s));\n\n  count = sscanf(s, \"%c %d %d %d %d %d %lu %lu %lu %lu %lu %lu %lu\",\n    &cdummy, &idummy, &idummy, &idummy, &idummy, &idummy,\n    &ldummy, &ldummy, &ldummy, &ldummy, &ldummy,\n    &user_time, &sys_time);\n\n  if (count != 13) return -1;\n  return (jlong)user_time * (1000000000 / os::Posix::clock_tics_per_second());\n}"
         }
       ]
     },
     {
       "role": "user",
       "stepNumber": "40A",
-      "content": "So where are the bottlenecks in that old path?"
+      "content": "Where do the first hotspots show up?"
+    },
+    {
+      "role": "assistant",
+      "stepNumber": "40B",
+      "slide": "fopen Hotspot",
+      "presentationStyle": "popup",
+      "content": "The first hotspot is opening the file. Even before parsing, path resolution and setup already cost real work.",
+      "mediaColumns": 2,
+      "media": [
+        {
+          "type": "image",
+          "src": ".pptx_extract/ppt/media/image54.png",
+          "caption": ""
+        },
+        {
+          "type": "image",
+          "src": ".pptx_extract/ppt/media/image55.png",
+          "caption": ""
+        }
+      ]
+    },
+    {
+      "role": "user",
+      "stepNumber": "40C",
+      "content": "What about the actual read path?"
+    },
+    {
+      "role": "assistant",
+      "stepNumber": "40D",
+      "slide": "fread and fclose",
+      "presentationStyle": "popup",
+      "content": "Then the read and close path show up. That is where kernel work, copying, and teardown add more cost than the tiny code suggests.",
+      "mediaColumns": 2,
+      "media": [
+        {
+          "type": "image",
+          "src": ".pptx_extract/ppt/media/image56.png",
+          "caption": ""
+        },
+        {
+          "type": "image",
+          "src": ".pptx_extract/ppt/media/image57.png",
+          "caption": ""
+        }
+      ]
+    },
+    {
+      "role": "user",
+      "stepNumber": "40E",
+      "content": "And where does parsing show up?"
     },
     {
       "role": "assistant",
       "stepNumber": 41,
-      "slide": "Bottlenecks in the Old Path",
-      "content": "The slides name the hotspots explicitly: fopen, fread, and sscanf. That is where extra micro-ops and switching energy pile up."
+      "slide": "sscanf Hotspot",
+      "presentationStyle": "popup",
+      "content": "Parsing is another hotspot. The ASCII conversion work is branch-heavy and surprisingly expensive for such a small-looking path.",
+      "media": [
+        {
+          "type": "image",
+          "src": ".pptx_extract/ppt/media/image58.png",
+          "caption": ""
+        }
+      ]
+    },
+    {
+      "role": "user",
+      "stepNumber": "41A",
+      "content": "Can you model that at a higher level?"
+    },
+    {
+      "role": "assistant",
+      "stepNumber": "41B",
+      "slide": "Theoretical Model",
+      "presentationStyle": "popup",
+      "content": "Yes. A simple model links frequency, micro-operations, voltage, and switching. It is not perfect physics. It is a way to reason about where dynamic work is happening.",
+      "media": [
+        {
+          "type": "image",
+          "src": ".pptx_extract/ppt/media/image59.png",
+          "caption": ""
+        }
+      ]
+    },
+    {
+      "role": "user",
+      "stepNumber": "41C",
+      "content": "Can you show that on actual code?"
+    },
+    {
+      "role": "assistant",
+      "stepNumber": "41D",
+      "slide": "Generated Example",
+      "presentationStyle": "popup",
+      "content": "Yes. Here the code is annotated line by line with estimated micro-operations and energy cost. The point is to make hidden runtime work visible directly in the code.",
+      "media": [
+        {
+          "type": "image",
+          "src": ".pptx_extract/ppt/media/image60.png",
+          "caption": ""
+        }
+      ],
+      "code": [
+        {
+          "language": "csharp",
+          "caption": "Annotated code example with estimated micro-ops and energy cost.",
+          "content": "class Program\n{\n  static void Main()\n  {\n    const int N = 1_000_000;           // compile-time constant, no runtime energy\n    var rnd = new Random();            // setup cost\n    var list = new List<int>(N);       // allocation cost\n\n    for (int i = 0; i < N; i++)        // loop overhead per iteration\n    {\n      int a = rnd.Next(1000), b = rnd.Next(1000); // RNG work\n      int sum = a + b, prod = a * b;              // arithmetic work\n      bool even = (sum % 2 == 0);                 // branch + modulo work\n      list.Add(even ? prod : sum);                // append work\n    }\n\n    list.Sort();                         // sorting dominates\n    var groups = list.GroupBy(x => x);   // grouping adds hash + scan work\n    var maxFreq = groups.Max(g => g.Count());\n\n    Console.WriteLine($\"Max frequency: {maxFreq}\");\n  }\n}"
+        }
+      ]
+    },
+    {
+      "role": "user",
+      "stepNumber": "41E",
+      "content": "Could GenAI use that same code to predict the bottlenecks?"
+    },
+    {
+      "role": "assistant",
+      "stepNumber": "41F",
+      "slide": "GenAI Question",
+      "presentationStyle": "popup",
+      "content": "That leads to the real question: given this annotated code and the theoretical model, could GenAI point to the likely hotspots before profiling confirms them?",
+      "media": [
+        {
+          "type": "image",
+          "src": ".pptx_extract/ppt/media/image61.jpeg",
+          "caption": ""
+        }
+      ]
     },
     {
       "role": "user",
@@ -414,7 +644,9 @@
       "role": "assistant",
       "stepNumber": 43,
       "slide": "Better Implementation",
+      "presentationStyle": "popup",
       "content": "The better path asks the kernel directly for the right clock. Less parsing, less copying, fewer syscalls, and much better latency.",
+      "openImageFullscreenAfterSpeech": true,
       "media": [
         {
           "type": "image",
@@ -425,7 +657,7 @@
       "code": [
         {
           "language": "cpp",
-          "caption": "The optimized path shown in the later code slides.",
+          "caption": "The optimized path.",
           "content": "static bool get_thread_clockid(Thread* thread, clockid_t* clockid, bool total) {\n  constexpr clockid_t CLOCK_TYPE_MASK = 3;\n  constexpr clockid_t CPUCLOCK_VIRT = 1;\n\n  int rc = pthread_getcpuclockid(thread->osthread()->pthread_id(), clockid);\n  if (rc != 0) {\n    assert_status(rc == ESRCH, rc, \"pthread_getcpuclockid failed\");\n    return false;\n  }\n\n  if (!total) {\n    *clockid = (*clockid & ~CLOCK_TYPE_MASK) | CPUCLOCK_VIRT;\n  }\n\n  return true;\n}\n\nstatic jlong user_thread_cpu_time(Thread* thread) {\n  clockid_t clockid;\n  bool success = get_thread_clockid(thread, &clockid, false);\n  return success ? os::Linux::thread_cpu_time(clockid) : -1;\n}"
         }
       ]

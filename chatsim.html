@@ -45,10 +45,14 @@
     .welcome h2 { color: var(--text); font-size: clamp(28px, 4vw, 38px); margin: 0 0 8px; }
     .message { display: flex; gap: 12px; margin-bottom: 18px; }
     .message.user { justify-content: flex-end; }
+    .message.assistant-spotlight { justify-content: center; }
+    .message.assistant-spotlight .avatar { display: none; }
     .avatar { width: 34px; height: 34px; display: grid; place-items: center; border-radius: 12px; background: rgba(16,163,127,.15); border: 1px solid rgba(16,163,127,.24); color: #d9fff3; font-size: 13px; font-weight: 700; }
     .bubble, .content { max-width: min(860px, 88%); border-radius: 18px; padding: 18px 20px; line-height: 1.7; font-size: 28px; position: relative; }
     .bubble { background: #2f2f2f; border: 1px solid rgba(255,255,255,.05); }
     .content { background: var(--card); border: 1px solid var(--border); }
+    .content.content-spotlight { width: min(1200px, 100%); max-width: min(1200px, 100%); padding: 26px 28px; border-radius: 24px; text-align: center; background: radial-gradient(circle at top, rgba(16,163,127,.12), transparent 35%), linear-gradient(180deg, rgba(31,35,38,.92), rgba(20,22,24,.92)); border: 1px solid rgba(255,255,255,.08); }
+    .content.content-spotlight .code-stack, .content.content-spotlight .code-card, .content.content-spotlight pre, .content.content-spotlight code { text-align: left; }
     .content p, .content ul, .content ol, .content blockquote { margin: 0 0 14px; }
     .content p:last-child, .content ul:last-child, .content ol:last-child, .content blockquote:last-child { margin-bottom: 0; }
     .content ul, .content ol { padding-left: 22px; }
@@ -69,6 +73,20 @@
     .media-card, .code-card { margin: 0; padding: 12px; border-radius: 18px; background: rgba(255,255,255,.03); border: 1px solid rgba(255,255,255,.08); }
     .media-card { display: grid; justify-items: center; }
     .media-card img, .media-card video { width: 100%; max-width: 100%; max-height: 50vh; display: block; border-radius: 12px; background: #0c0f11; object-fit: contain; }
+    .code-card { padding: 0; overflow: hidden; background: #10161c; border-color: rgba(83, 205, 171, .16); }
+    .code-header { display: flex; justify-content: space-between; gap: 12px; align-items: center; padding: 10px 14px; border-bottom: 1px solid rgba(255,255,255,.08); background: linear-gradient(180deg, rgba(22,30,38,.96), rgba(16,22,28,.96)); }
+    .code-language { display: inline-flex; align-items: center; justify-content: center; min-width: 44px; padding: 5px 10px; border-radius: 999px; background: rgba(16,163,127,.16); border: 1px solid rgba(16,163,127,.28); color: #c6f7ea; font-size: 12px; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; }
+    .code-card pre { margin: 0; border: none; border-radius: 0; background: #10161c; }
+    .code-card code { color: #dce8f2; }
+    .code-header .code-caption { margin-top: 0; }
+    .tok-comment { color: #6b7c93; }
+    .tok-keyword { color: #ff7edb; }
+    .tok-type { color: #7cc7ff; }
+    .tok-string { color: #f4e27a; }
+    .tok-number { color: #78f0a6; }
+    .tok-call { color: #6fe3ff; }
+    .tok-operator { color: #ffb86b; }
+    .tok-plain { color: #dce8f2; }
     .media-caption, .code-caption { margin-top: 8px; color: var(--muted); font-size: 14px; }
     .typing { display: inline-flex; gap: 6px; padding: 4px 0; }
     .typing span, .status-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--muted); animation: pulse 1s infinite ease-in-out; }
@@ -200,6 +218,7 @@
     let streamTimer = null;
     let currentStreamId = 0;
     let sidebarFocusIndex = null;
+    let replayBackStepIndex = null;
     let editMode = false;
     let editingStepIndex = null;
     let activeAssistantItem = null;
@@ -439,13 +458,103 @@
       });
     }
 
+    function highlightCode(content = "", language = "") {
+      const source = String(content || "");
+      const lang = String(language || "").toLowerCase();
+      const keywordSets = {
+        cpp: new Set(["static", "return", "if", "else", "do", "while", "for", "constexpr", "bool", "false", "true", "nullptr", "int", "long", "char", "size_t", "void", "const", "auto"]),
+        csharp: new Set(["class", "static", "void", "const", "int", "var", "bool", "return", "for", "if", "else", "new", "using", "public", "private", "true", "false"]),
+        javascript: new Set(["function", "return", "if", "else", "const", "let", "var", "async", "await", "true", "false", "null", "class", "new"]),
+        python: new Set(["def", "return", "if", "else", "elif", "for", "while", "in", "import", "from", "class", "True", "False", "None"]),
+        bash: new Set(["if", "then", "else", "fi", "for", "do", "done", "function", "local", "return"]),
+        sql: new Set(["select", "from", "where", "group", "by", "order", "join", "left", "right", "inner", "outer", "on", "insert", "update", "delete", "create", "table", "and", "or", "as"])
+      };
+      const typeSet = new Set(["Thread", "FILE", "Random", "List", "Console", "clockid_t", "pid_t", "jlong", "string", "Program"]);
+      const operators = ["::", "->", "=>", "==", "!=", "<=", ">=", "&&", "||", "+", "-", "*", "/", "%", "=", "?", ":", "<", ">"];
+      const parts = [];
+      let i = 0;
+      const push = (type, value) => {
+        if (!value) return;
+        parts.push(`<span class="${type}">${esc(value)}</span>`);
+      };
+      const isIdentStart = (ch) => /[A-Za-z_]/.test(ch);
+      const isIdent = (ch) => /[A-Za-z0-9_]/.test(ch);
+      while (i < source.length) {
+        const rest = source.slice(i);
+        const ch = source[i];
+        if (rest.startsWith("//")) {
+          let end = source.indexOf("\n", i);
+          if (end === -1) end = source.length;
+          push("tok-comment", source.slice(i, end));
+          i = end;
+          continue;
+        }
+        if ((lang === "python" || lang === "bash") && ch === "#") {
+          let end = source.indexOf("\n", i);
+          if (end === -1) end = source.length;
+          push("tok-comment", source.slice(i, end));
+          i = end;
+          continue;
+        }
+        if (ch === '"' || ch === "'") {
+          const quote = ch;
+          let end = i + 1;
+          while (end < source.length) {
+            if (source[end] === "\\" && end + 1 < source.length) {
+              end += 2;
+              continue;
+            }
+            if (source[end] === quote) {
+              end += 1;
+              break;
+            }
+            end += 1;
+          }
+          push("tok-string", source.slice(i, end));
+          i = end;
+          continue;
+        }
+        if (/\d/.test(ch)) {
+          let end = i + 1;
+          while (end < source.length && /[\d_.]/.test(source[end])) end += 1;
+          push("tok-number", source.slice(i, end));
+          i = end;
+          continue;
+        }
+        if (isIdentStart(ch)) {
+          let end = i + 1;
+          while (end < source.length && isIdent(source[end])) end += 1;
+          const word = source.slice(i, end);
+          const nextNonSpace = source.slice(end).match(/^\s*(.)/);
+          const nextChar = nextNonSpace ? nextNonSpace[1] : "";
+          if (typeSet.has(word)) push("tok-type", word);
+          else if ((keywordSets[lang] || keywordSets.cpp).has(lang === "sql" ? word.toLowerCase() : word)) push("tok-keyword", word);
+          else if (nextChar === "(") push("tok-call", word);
+          else push("tok-plain", word);
+          i = end;
+          continue;
+        }
+        const matchedOperator = operators.find((operator) => rest.startsWith(operator));
+        if (matchedOperator) {
+          push("tok-operator", matchedOperator);
+          i += matchedOperator.length;
+          continue;
+        }
+        push("tok-plain", ch);
+        i += 1;
+      }
+      return parts.join("");
+    }
+
     function renderCode(code = []) {
       const blocks = Array.isArray(code) ? code : [code];
       const validBlocks = blocks.filter(Boolean);
       if (!validBlocks.length) return "";
       const cards = validBlocks.map((block) => {
-        const caption = block.caption ? `<div class="code-caption">${esc(block.caption)}</div>` : "";
-        return `<figure class="code-card"><pre><code>${esc(block.content || "")}</code></pre>${caption}</figure>`;
+        const language = block.language ? `<span class="code-language">${esc(block.language)}</span>` : "";
+        const captionText = block.caption ? `<span class="code-caption">${esc(block.caption)}</span>` : "";
+        const header = language || captionText ? `<div class="code-header">${language}${captionText}</div>` : "";
+        return `<figure class="code-card">${header}<pre><code>${highlightCode(block.content || "", block.language || "")}</code></pre></figure>`;
       });
       return `<div class="code-stack">${cards.join("")}</div>`;
     }
@@ -477,6 +586,14 @@
         return `${textHtml}${mediaHtml}${codeHtml}`;
       }
       return `<div class="message-layout media-${mediaLayout}"><div class="message-copy">${textHtml}</div><div class="message-media">${mediaHtml}</div></div>${codeHtml}`;
+    }
+
+    function assistantPresentationClass(item) {
+      return item?.presentationStyle === "popup" ? "assistant-spotlight" : "";
+    }
+
+    function assistantContentClass(item) {
+      return item?.presentationStyle === "popup" ? "content content-spotlight" : "content";
     }
 
     function finishAssistantStep() {
@@ -605,6 +722,22 @@
       return Math.max(0, Math.min(step - 1, chatData.steps.length - 1));
     }
 
+    function currentRenderedStepIndex() {
+      if (!chatData.steps.length) return 0;
+      if (appState === State.POPUP) return Math.max(0, Math.min(step - 1, chatData.steps.length - 1));
+      if (appState === State.THINKING || appState === State.STREAMING) {
+        const activeIndex = Number(activeAssistantItem?.__stepIndex);
+        if (Number.isFinite(activeIndex)) return Math.max(0, Math.min(activeIndex, chatData.steps.length - 1));
+      }
+      const renderedMessages = [...messages.querySelectorAll(".message[data-step-index]")];
+      const lastMessage = renderedMessages.at(-1);
+      if (lastMessage) {
+        const renderedIndex = Number(lastMessage.dataset.stepIndex);
+        if (Number.isFinite(renderedIndex)) return Math.max(0, Math.min(renderedIndex, chatData.steps.length - 1));
+      }
+      return currentDisplayStepIndex();
+    }
+
     function syncSidebar() {
       const activeIndex = currentDisplayStepIndex();
       [...sidebar.children].forEach((item, index) => item.classList.toggle("active", index === activeIndex));
@@ -614,7 +747,7 @@
 
     function syncProgress() {
       dots.innerHTML = "";
-      const currentIndex = currentDisplayStepIndex();
+      const currentIndex = currentRenderedStepIndex();
       chatData.steps.forEach((_, index) => {
         const dot = document.createElement("span");
         dot.className = "dot";
@@ -658,6 +791,7 @@
     function appendUser(text, stepIndex = null) {
       const el = document.createElement("div");
       el.className = "message user";
+      if (stepIndex != null) el.dataset.stepIndex = String(stepIndex);
       el.innerHTML = `<div class="bubble">${renderEditButton(stepIndex)}${esc(text)}</div>`;
       messages.appendChild(el);
       scrollBottom();
@@ -666,6 +800,7 @@
     function appendPopupInline(item, stepIndex = null, { autoplayMedia = true } = {}) {
       const el = document.createElement("div");
       el.className = "message popup";
+      if (stepIndex != null) el.dataset.stepIndex = String(stepIndex);
       el.innerHTML = popupInner({ ...item, __stepIndex: stepIndex }, true, { autoplayMedia });
       messages.appendChild(el);
       if (autoplayMedia) activateAutoplayVideos(el);
@@ -701,8 +836,9 @@
       const speechToken = speakAssistantText(item);
       document.getElementById("typing-bubble")?.remove();
       const wrapper = document.createElement("div");
-      wrapper.className = "message";
-      wrapper.innerHTML = `<div class="avatar">AI</div><div class="content"></div>`;
+      wrapper.className = `message ${assistantPresentationClass(item)}`.trim();
+      if (item.__stepIndex != null) wrapper.dataset.stepIndex = String(item.__stepIndex);
+      wrapper.innerHTML = `<div class="avatar">AI</div><div class="${assistantContentClass(item)}"></div>`;
       messages.appendChild(wrapper);
       const contentEl = wrapper.querySelector(".content");
       activeAssistantItem = item;
@@ -752,6 +888,17 @@
       thinkTimer = clearTimer(thinkTimer);
       streamTimer = clearTimer(streamTimer);
       document.getElementById("typing-bubble")?.remove();
+    }
+
+    function interruptActivePlayback() {
+      cancelAssistantSpeech(true);
+      stopStreaming();
+      popupTimer = clearTimer(popupTimer);
+      pausePlayingVideos(messages);
+      pausePlayingVideos(document);
+      document.getElementById("popup-overlay")?.remove();
+      closeImageLightbox();
+      appState = State.IDLE;
     }
 
     function flushAssistantResponse() {
@@ -810,18 +957,19 @@
     }
 
     function continueAction() {
-      cancelAssistantSpeech(true);
-      pausePlayingVideos(messages);
+      replayBackStepIndex = null;
       if (appState === State.POPUP) {
         dismissPopup(true);
         return;
       }
       if (flushAssistantResponse()) return;
+      interruptActivePlayback();
       advance();
     }
 
     function advance() {
       if (appState !== State.IDLE) return;
+      replayBackStepIndex = null;
       sidebarFocusIndex = null;
       if (step >= chatData.steps.length) { completeDemo(); return; }
       progress.style.display = "flex";
@@ -857,8 +1005,9 @@
         if (item.role === "user") appendUser(item.content, i);
         if (item.role === "assistant") {
           const wrapper = document.createElement("div");
-          wrapper.className = "message";
-          wrapper.innerHTML = `<div class="avatar">AI</div><div class="content">${renderEditButton(i)}${renderAssistantFull(item)}</div>`;
+          wrapper.className = `message ${assistantPresentationClass(item)}`.trim();
+          wrapper.dataset.stepIndex = String(i);
+          wrapper.innerHTML = `<div class="avatar">AI</div><div class="${assistantContentClass(item)}">${renderEditButton(i)}${renderAssistantFull(item)}</div>`;
           messages.appendChild(wrapper);
           activateAutoplayVideos(wrapper);
         }
@@ -869,6 +1018,7 @@
 
     function jumpToStep(targetStep) {
       if (targetStep < 0 || targetStep >= chatData.steps.length) return;
+      replayBackStepIndex = null;
       thinkTimer = clearTimer(thinkTimer);
       popupTimer = clearTimer(popupTimer);
       stopStreaming();
@@ -915,23 +1065,72 @@
     }
 
     function restartDemo() {
-      thinkTimer = clearTimer(thinkTimer);
-      popupTimer = clearTimer(popupTimer);
-      stopStreaming();
-      cancelAssistantSpeech(true);
+      replayBackStepIndex = null;
+      interruptActivePlayback();
       activeAssistantItem = null;
       activeAssistantContentEl = null;
       step = 0;
       appState = State.IDLE;
       sidebarFocusIndex = null;
-      document.getElementById("popup-overlay")?.remove();
-      closeImageLightbox();
       document.querySelectorAll(".badge, .restart-btn").forEach((el) => el.remove());
       progress.style.display = "none";
       showWelcome();
       syncProgress();
       setButton("Start Demo", false);
       fakeInput.textContent = "Ask ChatGPT anything...";
+    }
+
+    function replayMediaForStepIndex(stepIndex) {
+      const item = chatData.steps[stepIndex];
+      if (!item) return false;
+      const messageEl = messages.querySelector(`.message[data-step-index="${stepIndex}"]`);
+      if (!messageEl) return false;
+      const video = messageEl.querySelector("video");
+      if (video) {
+        video.pause();
+        video.currentTime = 0;
+        const playAttempt = video.play();
+        if (playAttempt && typeof playAttempt.catch === "function") playAttempt.catch(() => {});
+        return true;
+      }
+      if (item.openImageFullscreenAfterSpeech) {
+        const imageIndex = Math.max(0, Number(item.fullscreenImageIndex) || 0);
+        const img = messageEl.querySelectorAll("img")[imageIndex];
+        if (img) {
+          openImageFromElement(img);
+          return true;
+        }
+      }
+      return false;
+    }
+
+    function goBackAction() {
+      if (!chatData?.steps?.length) return;
+      if (step === 0 && !messages.querySelector(".message")) return;
+      interruptActivePlayback();
+      const currentIndex = currentRenderedStepIndex();
+      const currentItem = chatData.steps[currentIndex];
+      if (currentItem && hasVideo(currentItem.media) && replayBackStepIndex !== currentIndex) {
+        jumpToStep(currentIndex);
+        replayBackStepIndex = currentIndex;
+        replayMediaForStepIndex(currentIndex);
+        return;
+      }
+      replayBackStepIndex = null;
+      const previousIndex = Math.max(0, currentIndex - 1);
+      jumpToStep(previousIndex);
+    }
+
+    function goToFirstStepAction() {
+      if (!chatData?.steps?.length) return;
+      interruptActivePlayback();
+      jumpToStep(0);
+    }
+
+    function goToLastStepAction() {
+      if (!chatData?.steps?.length) return;
+      interruptActivePlayback();
+      jumpToStep(chatData.steps.length - 1);
     }
 
     continueBtn.addEventListener("click", continueAction);
@@ -961,10 +1160,20 @@
       if (event.target === imageLightbox || event.target === imageLightboxImg) closeImageLightbox();
     });
     function handleGlobalKeydown(event) {
+      const isEditableTarget = event.target?.matches?.("input, textarea, select, [contenteditable='true'], [contenteditable='']");
       if (imageLightbox.classList.contains("visible")) {
         if (event.key === "Escape") {
           event.preventDefault();
           closeImageLightbox();
+          continueBtn.focus({ preventScroll: true });
+        } else if (event.key === "ArrowLeft" || event.key === "ArrowUp" || event.key === "PageUp" || event.key === "Backspace") {
+          event.preventDefault();
+          goBackAction();
+        } else if (event.key === " " || event.key === "ArrowRight") {
+          event.preventDefault();
+          closeImageLightbox();
+          continueBtn.focus({ preventScroll: true });
+          continueAction();
         }
         return;
       }
@@ -977,7 +1186,25 @@
         return;
       }
       if (event.key === "r" || event.key === "R") { restartDemo(); return; }
-      if (event.key === " " || event.key === "ArrowRight") {
+      if (event.key === "Home") {
+        if (isEditableTarget) return;
+        event.preventDefault();
+        goToFirstStepAction();
+        return;
+      }
+      if (event.key === "End") {
+        if (isEditableTarget) return;
+        event.preventDefault();
+        goToLastStepAction();
+        return;
+      }
+      if (event.key === "ArrowLeft" || event.key === "ArrowUp" || event.key === "PageUp" || event.key === "Backspace") {
+        if (isEditableTarget) return;
+        event.preventDefault();
+        goBackAction();
+        return;
+      }
+      if (event.key === " " || event.key === "ArrowRight" || event.key === "ArrowDown" || event.key === "PageDown" || event.key === "Enter" || event.key === "n" || event.key === "N") {
         const buttonTarget = event.target?.closest?.("button");
         if (buttonTarget && buttonTarget !== continueBtn) {
           event.preventDefault();
@@ -985,9 +1212,15 @@
           continueAction();
           return;
         }
-        if (event.target?.matches?.("input, textarea, select, [contenteditable='true'], [contenteditable='']")) return;
+        if (isEditableTarget) return;
         event.preventDefault();
         continueAction();
+        return;
+      }
+      if (event.key === "p" || event.key === "P") {
+        if (isEditableTarget) return;
+        event.preventDefault();
+        goBackAction();
       }
     }
     window.addEventListener("keydown", handleGlobalKeydown, true);
