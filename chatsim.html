@@ -46,7 +46,7 @@
     .message { display: flex; gap: 12px; margin-bottom: 18px; }
     .message.user { justify-content: flex-end; }
     .avatar { width: 34px; height: 34px; display: grid; place-items: center; border-radius: 12px; background: rgba(16,163,127,.15); border: 1px solid rgba(16,163,127,.24); color: #d9fff3; font-size: 13px; font-weight: 700; }
-    .bubble, .content { max-width: min(860px, 88%); border-radius: 18px; padding: 18px 20px; line-height: 1.7; font-size: 20px; position: relative; }
+    .bubble, .content { max-width: min(860px, 88%); border-radius: 18px; padding: 18px 20px; line-height: 1.7; font-size: 28px; position: relative; }
     .bubble { background: #2f2f2f; border: 1px solid rgba(255,255,255,.05); }
     .content { background: var(--card); border: 1px solid var(--border); }
     .content p, .content ul, .content ol, .content blockquote { margin: 0 0 14px; }
@@ -57,9 +57,16 @@
     .content pre { margin: 0 0 16px; padding: 16px 18px; border-radius: 16px; overflow: auto; background: rgba(7,10,12,.85); border: 1px solid rgba(255,255,255,.08); }
     .content pre code { background: transparent; padding: 0; border-radius: 0; display: block; color: #dce8f2; font-size: 16px; line-height: 1.5; }
     .slide-ref { display: inline-block; margin-bottom: 12px; padding: 6px 11px; border-radius: 999px; border: 1px solid rgba(16,163,127,.3); background: rgba(16,163,127,.12); color: #c6f7ea; font-size: 14px; font-weight: 700; letter-spacing: .03em; }
+    .message-layout { display: grid; gap: 18px; align-items: center; }
+    .message-layout.media-left, .message-layout.media-right { grid-template-columns: minmax(0, 1.25fr) minmax(260px, .9fr); }
+    .message-layout.media-left .message-media { order: -1; }
+    .message-copy { min-width: 0; }
+    .message-copy .media-stack { margin-top: 14px; }
+    .message-layout .message-media .media-stack { margin-top: 0; }
     .media-stack, .code-stack { display: grid; gap: 12px; margin-top: 14px; }
     .media-card, .code-card { margin: 0; padding: 12px; border-radius: 18px; background: rgba(255,255,255,.03); border: 1px solid rgba(255,255,255,.08); }
-    .media-card img, .media-card video { width: 100%; display: block; border-radius: 12px; background: #0c0f11; }
+    .media-card { display: grid; justify-items: center; }
+    .media-card img, .media-card video { width: 100%; max-width: 100%; max-height: 50vh; display: block; border-radius: 12px; background: #0c0f11; object-fit: contain; }
     .media-caption, .code-caption { margin-top: 8px; color: var(--muted); font-size: 14px; }
     .typing { display: inline-flex; gap: 6px; padding: 4px 0; }
     .typing span, .status-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--muted); animation: pulse 1s infinite ease-in-out; }
@@ -104,7 +111,7 @@
     .editor-actions { display: flex; gap: 10px; justify-content: flex-end; margin-top: 14px; flex-wrap: wrap; }
     .editor-note { color: var(--muted); font-size: 13px; }
     @keyframes pulse { 0%,100% { opacity:.35; transform: translateY(0); } 50% { opacity:1; transform: translateY(-1px); } }
-    @media (max-width: 900px) { body { flex-direction: column; } aside { width: 100%; max-height: 190px; border-right: none; border-bottom: 1px solid var(--border); } .popup-card { width: 92vw; min-height: 70vh; } .popup-text { font-size: clamp(24px, 6vw, 38px); } header { align-items: flex-start; } .header-actions { width: 100%; justify-content: flex-start; } .menu-panel { left: 0; right: auto; } }
+    @media (max-width: 900px) { body { flex-direction: column; } aside { width: 100%; max-height: 190px; border-right: none; border-bottom: 1px solid var(--border); } .popup-card { width: 92vw; min-height: 70vh; } .popup-text { font-size: clamp(24px, 6vw, 38px); } header { align-items: flex-start; } .header-actions { width: 100%; justify-content: flex-start; } .menu-panel { left: 0; right: auto; } .message-layout.media-left, .message-layout.media-right { grid-template-columns: 1fr; } .message-layout.media-left .message-media, .message-layout.media-right .message-media { order: 0; } }
   </style>
 </head>
 <body>
@@ -242,7 +249,7 @@
         return total + delay;
       }, 0));
       const wordsPerMinute = (words / streamMs) * 60000;
-      return Math.max(0.78, Math.min(1.35, wordsPerMinute / 190));
+      return Math.max(0.72, Math.min(1, wordsPerMinute / 165));
     }
 
     function cancelAssistantSpeech(markCompleted = false) {
@@ -337,12 +344,13 @@
       return out.join("\n");
     }
 
-    function renderMedia(media = []) {
+    function renderMedia(media = [], { autoplay = false } = {}) {
       if (!media.length) return "";
       const cards = media.map((item) => {
         const caption = item.caption ? `<div class="media-caption">${esc(item.caption)}</div>` : "";
         if (item.type === "video") {
-          return `<figure class="media-card"><video controls playsinline preload="metadata" data-autoplay-once="true" src="${attr(item.src)}"></video>${caption}</figure>`;
+          const autoplayAttr = autoplay ? ' data-autoplay-once="true"' : "";
+          return `<figure class="media-card"><video controls playsinline preload="metadata"${autoplayAttr} src="${attr(item.src)}"></video>${caption}</figure>`;
         }
         return `<figure class="media-card"><img src="${attr(item.src)}" alt="${attr(item.alt || item.caption || "slide media")}">${caption}</figure>`;
       });
@@ -400,8 +408,22 @@
       return `${slideRef}${renderMarkdown(text || "")}`;
     }
 
-    function renderAssistantFull(item) {
-      return `${renderAssistantText(item.content || "", item.slide)}${renderMedia(item.media)}${renderCode(item.code)}`;
+    function getMediaLayout(item) {
+      if (!item || (item.mediaLayout !== "left" && item.mediaLayout !== "right")) return "stack";
+      const media = Array.isArray(item.media) ? item.media : [];
+      if (media.length !== 1 || media[0]?.type !== "image") return "stack";
+      return item.mediaLayout;
+    }
+
+    function renderAssistantFull(item, { autoplayMedia = false } = {}) {
+      const textHtml = renderAssistantText(item.content || "", item.slide);
+      const mediaHtml = renderMedia(item.media, { autoplay: autoplayMedia });
+      const codeHtml = renderCode(item.code);
+      const mediaLayout = getMediaLayout(item);
+      if (mediaLayout === "stack") {
+        return `${textHtml}${mediaHtml}${codeHtml}`;
+      }
+      return `<div class="message-layout media-${mediaLayout}"><div class="message-copy">${textHtml}</div><div class="message-media">${mediaHtml}</div></div>${codeHtml}`;
     }
 
     function finishAssistantStep() {
@@ -513,9 +535,9 @@
       refreshCurrentView();
     }
 
-    function popupInner(item, inlineCard = false) {
+    function popupInner(item, inlineCard = false, { autoplayMedia = false } = {}) {
       const button = inlineCard ? "" : `<div><button class="popup-btn" id="popup-btn" type="button" disabled>Continue</button></div>`;
-      return `<div class="${inlineCard ? "popup-inline" : "popup-card"}">${renderEditButton(item.__stepIndex)}<div class="popup-text">${esc(item.content)}</div>${renderMedia(item.media)}${inlineCard ? "" : button}</div>`;
+      return `<div class="${inlineCard ? "popup-inline" : "popup-card"}">${renderEditButton(item.__stepIndex)}<div class="popup-text">${esc(item.content)}</div>${renderMedia(item.media, { autoplay: autoplayMedia })}${inlineCard ? "" : button}</div>`;
     }
 
     function setButton(label, disabled) {
@@ -523,8 +545,15 @@
       continueBtn.disabled = disabled;
     }
 
+    function currentDisplayStepIndex() {
+      if (!chatData.steps.length) return 0;
+      if (sidebarFocusIndex != null) return sidebarFocusIndex;
+      if (appState === State.THINKING || appState === State.STREAMING) return Math.max(0, Math.min(step, chatData.steps.length - 1));
+      return Math.max(0, Math.min(step - 1, chatData.steps.length - 1));
+    }
+
     function syncSidebar() {
-      const activeIndex = sidebarFocusIndex ?? Math.max(0, Math.min(step, chatData.steps.length - 1));
+      const activeIndex = currentDisplayStepIndex();
       [...sidebar.children].forEach((item, index) => item.classList.toggle("active", index === activeIndex));
       const activeItem = sidebar.children[activeIndex];
       if (activeItem) activeItem.scrollIntoView({ block: "nearest" });
@@ -532,11 +561,12 @@
 
     function syncProgress() {
       dots.innerHTML = "";
+      const currentIndex = currentDisplayStepIndex();
       chatData.steps.forEach((_, index) => {
         const dot = document.createElement("span");
         dot.className = "dot";
         if (index < step) dot.classList.add("done");
-        else if (index === step) dot.classList.add("current");
+        if (index === currentIndex) dot.classList.add("current");
         dots.appendChild(dot);
       });
       const users = chatData.steps.filter((item) => item.role === "user").length;
@@ -580,12 +610,12 @@
       scrollBottom();
     }
 
-    function appendPopupInline(item, stepIndex = null) {
+    function appendPopupInline(item, stepIndex = null, { autoplayMedia = true } = {}) {
       const el = document.createElement("div");
       el.className = "message popup";
-      el.innerHTML = popupInner({ ...item, __stepIndex: stepIndex }, true);
+      el.innerHTML = popupInner({ ...item, __stepIndex: stepIndex }, true, { autoplayMedia });
       messages.appendChild(el);
-      activateAutoplayVideos(el);
+      if (autoplayMedia) activateAutoplayVideos(el);
       scrollBottom();
     }
 
@@ -625,7 +655,7 @@
       activeAssistantItem = item;
       activeAssistantContentEl = contentEl;
       if (immediate) {
-        contentEl.innerHTML = `${renderEditButton(item.__stepIndex)}${renderAssistantFull(item)}`;
+        contentEl.innerHTML = `${renderEditButton(item.__stepIndex)}${renderAssistantFull(item, { autoplayMedia: true })}`;
         if (hasVideo(item.media)) activateAssistantVideosAfterSpeech(wrapper, speechToken);
         else activateAutoplayVideos(wrapper);
         keepScrolledToBottom();
@@ -650,7 +680,7 @@
           scrollBottom();
         }
         if (index >= tokens.length) {
-          contentEl.innerHTML = `${renderEditButton(item.__stepIndex)}${renderAssistantFull(item)}`;
+          contentEl.innerHTML = `${renderEditButton(item.__stepIndex)}${renderAssistantFull(item, { autoplayMedia: true })}`;
           if (hasVideo(item.media)) activateAssistantVideosAfterSpeech(wrapper, speechToken);
           else activateAutoplayVideos(wrapper);
           keepScrolledToBottom();
@@ -679,7 +709,7 @@
       }
       if (appState === State.STREAMING && activeAssistantItem && activeAssistantContentEl) {
         stopStreaming();
-        activeAssistantContentEl.innerHTML = `${renderEditButton(activeAssistantItem.__stepIndex)}${renderAssistantFull(activeAssistantItem)}`;
+        activeAssistantContentEl.innerHTML = `${renderEditButton(activeAssistantItem.__stepIndex)}${renderAssistantFull(activeAssistantItem, { autoplayMedia: true })}`;
         activateAutoplayVideos(activeAssistantContentEl.closest(".message") || messages);
         finishAssistantStep();
         return true;
@@ -691,7 +721,7 @@
       const overlay = document.createElement("div");
       overlay.className = "popup-overlay";
       overlay.id = "popup-overlay";
-      overlay.innerHTML = popupInner(item);
+      overlay.innerHTML = popupInner(item, false, { autoplayMedia: true });
       mainEl.appendChild(overlay);
       activateAutoplayVideos(overlay);
       requestAnimationFrame(() => overlay.classList.add("visible"));
@@ -779,7 +809,7 @@
           messages.appendChild(wrapper);
           activateAutoplayVideos(wrapper);
         }
-        if (item.role === "popup") appendPopupInline(item, i);
+        if (item.role === "popup") appendPopupInline(item, i, { autoplayMedia: false });
       }
       scrollBottom();
     }
