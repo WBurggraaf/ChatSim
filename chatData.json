@@ -1,6 +1,6 @@
 {
   "demoTitle": "Spotting Digital Waste in Code gives you energy",
-  "model": "ChatGPT 4o",
+  "model": "ChatGPT 5.4",
   "thinkingDelay": 2200,
   "messageDelay": 500,
   "steps": [
@@ -44,6 +44,11 @@
       ]
     },
     {
+      "role": "user",
+      "stepNumber": "6A",
+      "content": "Who is Freek?"
+    },
+    {
       "role": "assistant",
       "stepNumber": 7,
       "slide": "Spotting in Nature",
@@ -56,6 +61,11 @@
           "caption": ""
         }
       ]
+    },
+    {
+      "role": "user",
+      "stepNumber": "7A",
+      "content": "What does spotting train you to do?"
     },
     {
       "role": "assistant",
@@ -156,6 +166,11 @@
       ]
     },
     {
+      "role": "user",
+      "stepNumber": "18A",
+      "content": "What does that value framing change?"
+    },
+    {
       "role": "assistant",
       "stepNumber": 19,
       "slide": "Tree Value",
@@ -188,6 +203,11 @@
       ]
     },
     {
+      "role": "user",
+      "stepNumber": "21A",
+      "content": "So what is the core idea here?"
+    },
+    {
       "role": "assistant",
       "stepNumber": 22,
       "slide": "Cost Without Value",
@@ -199,6 +219,11 @@
           "caption": ""
         }
       ]
+    },
+    {
+      "role": "user",
+      "stepNumber": "22A",
+      "content": "And how do you quantify that?"
     },
     {
       "role": "assistant",
@@ -251,10 +276,16 @@
       "content": "The question changes. Not only 'how do we save power?' but 'is this workload healthy, efficient, and worth running at all?'"
     },
     {
+      "role": "user",
+      "stepNumber": "31A",
+      "content": "Can you show that visually?"
+    },
+    {
       "role": "assistant",
       "stepNumber": 32,
       "slide": "Workload Quality Visual",
       "content": "This visual makes the pivot concrete by separating power use from utilization. A system can consume plenty without delivering much.",
+      "openImageFullscreenAfterSpeech": true,
       "media": [
         {
           "type": "image",
@@ -262,6 +293,11 @@
           "caption": ""
         }
       ]
+    },
+    {
+      "role": "user",
+      "stepNumber": "32A",
+      "content": "What do the follow-up slides reinforce?"
     },
     {
       "role": "assistant",
@@ -272,7 +308,7 @@
     {
       "role": "user",
       "stepNumber": 34,
-      "content": "Can a tiny code change really matter that much?"
+      "content": "Can a tiny code change really matter that much, and what example do you use?"
     },
     {
       "role": "popup",
@@ -285,6 +321,11 @@
           "caption": ""
         }
       ]
+    },
+    {
+      "role": "user",
+      "stepNumber": "35A",
+      "content": "What example do you use?"
     },
     {
       "role": "assistant",
@@ -300,6 +341,11 @@
       ]
     },
     {
+      "role": "user",
+      "stepNumber": "36A",
+      "content": "How do you introduce that case?"
+    },
+    {
       "role": "assistant",
       "stepNumber": 37,
       "slide": "Code Case Intro",
@@ -311,6 +357,11 @@
           "caption": ""
         }
       ]
+    },
+    {
+      "role": "user",
+      "stepNumber": "37A",
+      "content": "What is the core technical idea?"
     },
     {
       "role": "assistant",
@@ -342,6 +393,11 @@
           "content": "static jlong user_thread_cpu_time(Thread* thread) {\n  pid_t tid = thread->osthread()->thread_id();\n  char* s;\n  char stat[2048];\n  size_t statlen;\n  char proc_name[64];\n  int count;\n  long sys_time, user_time;\n  char cdummy;\n  int idummy;\n  long ldummy;\n  FILE* fp;\n\n  os::snprintf_checked(proc_name, 64, \"/proc/self/task/%d/stat\", tid);\n  fp = os::fopen(proc_name, \"r\");\n  if (fp == nullptr) return -1;\n\n  statlen = fread(stat, 1, 2047, fp);\n  stat[statlen] = '\\0';\n  fclose(fp);\n\n  s = strrchr(stat, ')');\n  if (s == nullptr) return -1;\n  do { s++; } while (s && isspace((unsigned char)*s));\n\n  count = sscanf(s, \"%c %d %d %d %d %d %lu %lu %lu %lu %lu %lu %lu\",\n    &cdummy, &idummy, &idummy, &idummy, &idummy, &idummy,\n    &ldummy, &ldummy, &ldummy, &ldummy, &ldummy,\n    &user_time, &sys_time);\n\n  if (count != 13) return -1;\n  return (jlong)user_time * (1000000000 / os::Posix::clock_tics_per_second());\n}"
         }
       ]
+    },
+    {
+      "role": "user",
+      "stepNumber": "40A",
+      "content": "So where are the bottlenecks in that old path?"
     },
     {
       "role": "assistant",
@@ -403,10 +459,20 @@
       "content": "Map each waste item to yearly cost, energy or CO2, performance impact, and risk. That is how it becomes backlog-worthy."
     },
     {
+      "role": "user",
+      "stepNumber": "47A",
+      "content": "How should I phrase that as an outcome?"
+    },
+    {
       "role": "assistant",
       "stepNumber": 48,
       "slide": "Outcome Language",
       "content": "Do not pitch implementation details. Frame it as an outcome, like reducing infrastructure cost by consolidating underused workloads."
+    },
+    {
+      "role": "user",
+      "stepNumber": "48A",
+      "content": "What kinds of actions come first?"
     },
     {
       "role": "assistant",
@@ -415,10 +481,20 @@
       "content": "Start with safe quick wins. Not a platform revolution, but cleanup, consolidation, and right-sizing."
     },
     {
+      "role": "user",
+      "stepNumber": "49A",
+      "content": "How do teams create room for that work?"
+    },
+    {
       "role": "assistant",
       "stepNumber": 50,
       "slide": "Capacity for Reduction",
       "content": "Give it room to happen: reserve sprint capacity or a quarterly target. Otherwise urgent delivery will always win."
+    },
+    {
+      "role": "user",
+      "stepNumber": "50A",
+      "content": "And who should own it?"
     },
     {
       "role": "assistant",
@@ -453,6 +529,11 @@
       "stepNumber": 55,
       "slide": "Frames",
       "content": "Use three frames: value, cost, and exception. Ask who uses it, what it costs, and whether the trade-off is intentional."
+    },
+    {
+      "role": "user",
+      "stepNumber": "55A",
+      "content": "And what choices does that lead to?"
     },
     {
       "role": "assistant",

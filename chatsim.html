@@ -130,7 +130,7 @@
     <header>
       <div id="demo-title">AI Business Strategy</div>
       <div class="header-actions">
-        <div class="pill" id="model-label">ChatGPT 4o</div>
+        <div class="pill" id="model-label">ChatGPT 5.4</div>
         <div class="menu-wrap">
           <button class="toolbar-btn" id="tools-menu-btn" type="button">Tools</button>
           <div class="menu-panel" id="tools-menu">
@@ -456,8 +456,7 @@
     }
 
     function getStepNumber(item, fallbackIndex = null) {
-      const value = Number(item?.stepNumber);
-      if (Number.isFinite(value) && value > 0) return value;
+      if (item?.stepNumber != null && item.stepNumber !== "") return item.stepNumber;
       if (fallbackIndex == null) return null;
       return fallbackIndex + 1;
     }
@@ -841,11 +840,7 @@
         appendUser(item.content, step);
         step += 1;
         syncProgress();
-        if (step < chatData.steps.length && chatData.steps[step].role === "assistant") {
-          startAssistantStep(chatData.steps[step], step);
-        } else {
-          syncInputState();
-        }
+        syncInputState();
         return;
       }
       if (item.role === "assistant") {
