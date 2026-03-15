@@ -40,6 +40,13 @@
     .content ul, .content ol { padding-left: 22px; }
     .content blockquote { border-left: 3px solid var(--accent); padding-left: 12px; color: #d7e7e3; }
     .content code { background: rgba(255,255,255,.08); border-radius: 6px; padding: 2px 6px; }
+    .content pre { margin: 0 0 14px; padding: 14px 16px; border-radius: 16px; overflow: auto; background: rgba(7,10,12,.85); border: 1px solid rgba(255,255,255,.08); }
+    .content pre code { background: transparent; padding: 0; border-radius: 0; display: block; color: #dce8f2; }
+    .slide-ref { display: inline-block; margin-bottom: 12px; padding: 5px 10px; border-radius: 999px; border: 1px solid rgba(16,163,127,.3); background: rgba(16,163,127,.12); color: #c6f7ea; font-size: 12px; font-weight: 700; letter-spacing: .03em; }
+    .media-stack, .code-stack { display: grid; gap: 12px; margin-top: 14px; }
+    .media-card, .code-card { margin: 0; padding: 12px; border-radius: 18px; background: rgba(255,255,255,.03); border: 1px solid rgba(255,255,255,.08); }
+    .media-card img, .media-card video { width: 100%; display: block; border-radius: 12px; background: #0c0f11; }
+    .media-caption, .code-caption { margin-top: 8px; color: var(--muted); font-size: 12px; }
     .typing { display: inline-flex; gap: 6px; padding: 4px 0; }
     .typing span, .status-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--muted); animation: pulse 1s infinite ease-in-out; }
     .typing span:nth-child(2) { animation-delay: .14s; }
@@ -57,9 +64,9 @@
     button.primary:disabled, .popup-btn:disabled { background: rgba(255,255,255,.08); color: var(--muted); cursor: not-allowed; }
     .hint { color: var(--muted); font-size: 12px; margin-top: 10px; }
     .badge { color: #c6f7ea; font-weight: 600; }
-    .popup-overlay { position: fixed; inset: 0; background: rgba(9,11,13,.76); backdrop-filter: blur(8px); display: grid; place-items: center; opacity: 0; transition: opacity .28s ease; }
+    .popup-overlay { position: fixed; inset: 0; background: rgba(9,11,13,.76); backdrop-filter: blur(8px); display: grid; place-items: center; opacity: 0; transition: opacity .28s ease; z-index: 20; }
     .popup-overlay.visible { opacity: 1; }
-    .popup-card { width: min(92vw, 560px); border-radius: 28px; padding: 28px; text-align: center; background: linear-gradient(180deg, rgba(31,35,38,.98), rgba(20,22,24,.98)); border: 1px solid rgba(255,255,255,.08); transform: translateY(18px) scale(.98); transition: transform .28s ease; }
+    .popup-card { width: min(80vw, 1200px); min-height: min(80vh, 760px); border-radius: 28px; padding: clamp(28px, 4vw, 56px); text-align: center; display: flex; flex-direction: column; justify-content: center; background: linear-gradient(180deg, rgba(31,35,38,.98), rgba(20,22,24,.98)); border: 1px solid rgba(255,255,255,.08); transform: translateY(18px) scale(.98); transition: transform .28s ease; }
     .popup-overlay.visible .popup-card { transform: translateY(0) scale(1); }
     .robot { width: 120px; height: 120px; margin: 0 auto 18px; border-radius: 30px; position: relative; background: linear-gradient(180deg, #203241, #15212b); border: 1px solid rgba(16,163,127,.28); }
     .robot::before, .robot::after { content: ""; position: absolute; top: 40px; width: 18px; height: 18px; border-radius: 50%; background: #aef7e3; box-shadow: 0 0 18px rgba(16,163,127,.45); }
@@ -67,11 +74,14 @@
     .robot::after { right: 30px; }
     .mouth { position: absolute; left: 50%; bottom: 28px; width: 42px; height: 8px; transform: translateX(-50%); border-radius: 999px; background: rgba(174,247,227,.86); }
     .robot.speaking .mouth { animation: mouth .5s infinite ease-in-out; }
-    .popup-text { font-size: clamp(20px, 3vw, 30px); line-height: 1.35; margin-bottom: 18px; }
+    .popup-text { font-size: clamp(28px, 3.8vw, 56px); line-height: 1.15; margin-bottom: 22px; text-wrap: balance; }
     .status { display: inline-flex; align-items: center; gap: 8px; color: var(--muted); margin-bottom: 18px; }
+    .message.popup { justify-content: center; }
+    .popup-inline { width: min(900px, 100%); padding: 22px 24px; border-radius: 24px; text-align: center; background: linear-gradient(180deg, rgba(31,35,38,.92), rgba(20,22,24,.92)); border: 1px solid rgba(255,255,255,.08); }
+    .popup-inline .popup-text { font-size: clamp(20px, 2.6vw, 34px); margin-bottom: 0; }
     @keyframes pulse { 0%,100% { opacity:.35; transform: translateY(0); } 50% { opacity:1; transform: translateY(-1px); } }
     @keyframes mouth { 0%,100% { transform: translateX(-50%) scaleY(1); } 50% { transform: translateX(-50%) scaleY(2.4); } }
-    @media (max-width: 900px) { body { flex-direction: column; } aside { width: 100%; max-height: 190px; border-right: none; border-bottom: 1px solid var(--border); } }
+    @media (max-width: 900px) { body { flex-direction: column; } aside { width: 100%; max-height: 190px; border-right: none; border-bottom: 1px solid var(--border); } .popup-card { width: 92vw; min-height: 70vh; } .popup-text { font-size: clamp(24px, 6vw, 38px); } }
   </style>
 </head>
 <body>
@@ -93,19 +103,120 @@
   </main>
   <script>
     const chatData = {
-      demoTitle: "AI Business Strategy",
+      demoTitle: "Spotting Digital Waste in Code gives you energy",
       model: "ChatGPT 4o",
       thinkingDelay: 2200,
       messageDelay: 500,
       steps: [
-        { role: "popup", content: "Hi Wilco! Let's show how AI transforms your business. Press Continue to begin." },
-        { role: "user", content: "What are the most impactful ways AI can transform our business operations?" },
-        { role: "assistant", content: "There are several high-impact areas where AI can genuinely transform how you operate:\n\n**1. Intelligent Process Automation**\nBeyond simple rule-based scripts, AI handles judgment-intensive tasks - processing unstructured documents, managing workflow exceptions, and routing work dynamically based on context.\n\n**2. Predictive Analytics & Forecasting**\nModels trained on your historical data can forecast demand, surface anomalies early, and flag risks before they escalate - giving leadership a meaningful head start.\n\n**3. Customer Experience at Scale**\nReal-time AI personalises every touchpoint - recommendations, pricing, support - at a depth and speed no human team can match, while keeping interactions genuinely relevant.\n\n**4. Institutional Knowledge Management**\nAI makes your organisation's expertise instantly searchable and actionable, cutting onboarding time and decision latency across teams.\n\nWhich of these areas is most pressing for you right now?" },
-        { role: "user", content: "Let's focus on customer experience. How do we get started without disrupting existing systems?" },
-        { role: "assistant", content: "A phased approach is the safest path - it delivers early wins without touching what's already working:\n\n**Phase 1 - Listen (Weeks 1-4)**\nDeploy AI analytics on top of your existing data sources: CRM, support tickets, web behaviour. Zero system changes required. You gain visibility immediately and build the evidence base for Phase 2.\n\n**Phase 2 - Assist (Weeks 5-12)**\nIntroduce AI-powered recommendations alongside your current tools. Support agents see real-time suggestions but stay in full control. Confidence builds, and the model gets better from real feedback.\n\n**Phase 3 - Automate (Month 4+)**\nSelectively automate high-volume, low-complexity interactions - freeing your team for complex, high-value cases where human judgment matters most.\n\n> Key principle: AI should augment your team before it automates your workflows. This drives adoption, builds trust, and dramatically reduces rollout risk.\n\nWould you like a deeper look at any of these phases?" },
-        { role: "user", content: "What KPIs should we track to measure success throughout this rollout?" },
-        { role: "assistant", content: "Track progress across three dimensions so you capture the full picture:\n\n**Customer Impact**\n- CSAT / NPS trend (weekly, not just quarterly)\n- First-contact resolution rate\n- Average handle time\n\n**Operational Efficiency**\n- Cost-per-interaction\n- AI containment rate - the percentage of interactions handled without human escalation\n- Agent productivity (cases closed per hour)\n\n**Business Outcomes**\n- Customer retention and churn rate\n- Revenue attributed to AI-driven upsell or cross-sell recommendations\n- Churn prediction model accuracy (tested against actuals monthly)\n\nFor your 90-day pilot I would recommend anchoring on just two north-star metrics: **first-contact resolution** and **cost-per-interaction**. They are measurable quickly, easy to socialise with leadership, and map directly to ROI." },
-        { role: "popup", content: "That's the demo, Wilco. AI can transform operations with measurable impact. Thanks." }
+        { role: "popup", content: "This demo now follows your slide deck like a GenAI conversation. It keeps the chat feel, but the story, visuals, code, and examples come from the PowerPoint." },
+        { role: "user", content: "Can you walk me through the presentation as if the talk itself is a live GenAI chat?" },
+        { role: "assistant", slide: "Slides 4-5 | Agenda", content: `Yes. The deck naturally breaks into four acts:\n\n1. **Inzicht & Bewustwording**\nLearn to notice digital waste the same way you learn to notice litter in nature.\n\n2. **Dialoog & Perspectief**\nShift the conversation from raw energy metrics to the quality of workloads and execution behaviour.\n\n3. **Kaders & Keuzes**\nDecide when something is waste, when it is a trade-off, and what action belongs on the backlog.\n\n4. **Aan de slag**\nEnd with concrete questions the audience can take back to their own systems.\n\nThat makes the chat flow feel like a guided investigation rather than a linear slide dump.` },
+        { role: "user", content: "How do you make the audience feel what spotting really means?" },
+        { role: "assistant", slide: "Slides 7-17 | Spotting in de natuur", content: `You start with an analogy. People first learn to spot what they care about.\n\nIn the deck, Freek goes into nature looking for rare birds. Once you train your eyes, you begin to notice patterns. Then the twist lands: after learning to look carefully, you also start to notice **waste**.\n\nThat is the bridge to software. Digital waste is often invisible at first because:\n\n- habit makes teams blind\n- ownership is diffuse: "not my problem"\n- the cost stays abstract until it compounds\n\nSo the opening section teaches the audience a mental move: **first see it, then name it, then act on it.**`, media: [
+          { type: "video", src: ".pptx_extract/ppt/media/media1.mp4", caption: "Embedded intro clip from the deck." },
+          { type: "image", src: ".pptx_extract/ppt/media/image28.jpeg", caption: "The nature-to-waste visual pivot from the opening story." }
+        ] },
+        { role: "user", content: "Once they can see it, how do you explain the cost?" },
+        { role: "assistant", slide: "Slides 18-30 | Kosten zonder waarde", content: `The next move is to make waste concrete.\n\nYou connect visible waste in the physical world to invisible waste in digital systems. The deck does that through a tree-value example, then broadens into electricity context and finally lands on a simple definition:\n\n> **Digital Waste = kosten zonder waarde**\n\nFrom there, the slides make two points very clearly:\n\n- low utilisation still consumes meaningful energy\n- consolidating underused workloads reduces both cost and emissions\n\nThe VM example is especially strong because it translates utilisation into something operationally familiar: three 25% workloads consolidated into one 75% workload means lower annual cost and lower yearly energy use.`, media: [
+          { type: "image", src: ".pptx_extract/ppt/media/image34.png", caption: "Electricity Maps screenshot used to ground the discussion in real energy context." }
+        ] },
+        { role: "user", content: "What practical signals do you give engineers so this does not stay abstract?" },
+        { role: "assistant", slide: "Slides 31-39 | Signalen en typen", content: `You give them diagnostic signals first, then waste categories.\n\n**Three signals**\n- Lots of capacity, little real usage\n- The system feels slow while CPU is not saturated\n- One component is maxed out while the rest is idle\n\n**Four types of digital waste**\n- resources running without useful work\n- structural overcapacity\n- configuration choices repeated from habit\n- hidden compute that adds no business value\n\nThis is a good point in the chat to reinforce that waste is not only about idle servers. It also shows up as waiting, imbalance, avoidable background work, and inherited defaults.` },
+        { role: "user", content: "Where do you connect this to software architecture and technical debt?" },
+        { role: "assistant", slide: "Slides 40-47 | Link met tech debt", content: `The tech-debt section says the quiet part out loud: waste persists because systems become tightly coupled and expensive to change.\n\nYou describe a recognisable failure mode:\n\n- one change forces five more changes\n- testing takes longer\n- faults ripple across components\n- replacing old solutions becomes risky\n\nThat matters for green software engineering because digital waste is often **maintained by design friction**. Teams keep dragging inefficient choices forward because changing them has become too expensive.\n\nSo the deck links waste to a deeper root cause: not just poor runtime behaviour, but architectures that make better behaviour harder to introduce.` },
+        { role: "user", content: "How do you shift the conversation from saving energy to workload quality?" },
+        { role: "assistant", slide: "Slides 49-53 | Kwaliteit van workloads", content: `This is one of the strongest pivots in the deck.\n\nInstead of asking **"How do we save electricity?"**, you ask **"Is this workload healthy, efficient, and valuable?"**\n\nThat framing is useful because engineers can reason about workload quality immediately. They understand utilisation, waiting, data movement, bottlenecks, and underused resources. Sustainability then becomes an engineering consequence of better workload design, not a separate moral layer.\n\nThe workload-quality visuals help show why utilisation matters: power use does not fall linearly with utilisation, so badly used infrastructure can stay surprisingly expensive in both cost and energy terms.`, media: [
+          { type: "image", src: ".pptx_extract/ppt/media/image42.png", caption: "Power-versus-utilisation graphic from the workload quality section." }
+        ] },
+        { role: "user", content: "Where does the code example enter the story?" },
+        { role: "assistant", slide: "Slides 54-66 | Only 40 lines of code", content: `The deck then narrows from infrastructure and workloads down to code-level waste.\n\nYou use the OpenJDK thread CPU time example as a perfect case study because it is compact, measurable, and surprising. The message is:\n\n- a tiny implementation detail can create a huge performance gap\n- runtime behaviour matters more than source-code size\n- GenAI can help inspect unfamiliar code and surface likely bottlenecks quickly\n\nThe narrative arc here is strong: start from a bug report, examine the old approach, identify where the waste comes from, compare an alternative design, and then show the resulting improvement.`, media: [
+          { type: "image", src: ".pptx_extract/ppt/media/image47.png", caption: "The OpenJDK issue showing the 30x-400x slowdown problem statement." },
+          { type: "image", src: ".pptx_extract/ppt/media/image50.png", caption: "External reference used in the deck to frame the 40-line fix story." }
+        ] },
+        { role: "user", content: "Show me how the deck presents the waste in the old implementation." },
+        { role: "assistant", slide: "Slides 67-69 | Oude implementatie", content: `The old implementation repeatedly walks through **procfs** and parses text just to read thread CPU time.\n\nThat is the key teaching moment. The waste is not in a giant algorithm. It is in a small chain of operations that looks innocent in code review but is expensive at runtime:\n\n- open a proc file\n- read kernel-formatted text into user space\n- search through the string\n- parse multiple numbers with \`sscanf\`\n\nThe deck explicitly calls out \`fopen\`, \`fread\`, and \`sscanf\` as energy-heavy or micro-op-heavy blocks because they trigger syscalls, data copies, formatting, and branch-heavy parsing.`, media: [
+          { type: "image", src: ".pptx_extract/ppt/media/image52.png", caption: "Original OpenJDK code path reading `/proc/self/task/%d/stat`." },
+          { type: "image", src: ".pptx_extract/ppt/media/image54.png", caption: "Profile view highlighting expensive work inside the old path." }
+        ], code: [
+          {
+            language: "cpp",
+            caption: "Old procfs-based path reconstructed from the code slides.",
+            content: `static jlong user_thread_cpu_time(Thread* thread) {
+  pid_t tid = thread->osthread()->thread_id();
+  char* s;
+  char stat[2048];
+  size_t statlen;
+  char proc_name[64];
+  int count;
+  long sys_time, user_time;
+  char cdummy;
+  int idummy;
+  long ldummy;
+  FILE* fp;
+
+  os::snprintf_checked(proc_name, 64, "/proc/self/task/%d/stat", tid);
+  fp = os::fopen(proc_name, "r");
+  if (fp == nullptr) return -1;
+
+  statlen = fread(stat, 1, 2047, fp);
+  stat[statlen] = '\\0';
+  fclose(fp);
+
+  s = strrchr(stat, ')');
+  if (s == nullptr) return -1;
+  do { s++; } while (s && isspace((unsigned char)*s));
+
+  count = sscanf(s, "%c %d %d %d %d %d %lu %lu %lu %lu %lu %lu %lu",
+    &cdummy, &idummy, &idummy, &idummy, &idummy, &idummy,
+    &ldummy, &ldummy, &ldummy, &ldummy, &ldummy,
+    &user_time, &sys_time);
+
+  if (count != 13) return -1;
+  return (jlong)user_time * (1000000000 / os::Posix::clock_tics_per_second());
+}`
+          }
+        ] },
+        { role: "user", content: "And what is the better path you show afterwards?" },
+        { role: "assistant", slide: "Slides 70-72 | Betere implementatie", content: `The improved version avoids procfs entirely and asks the kernel for the right clock directly.\n\nThat removes file opens, string parsing, and most of the avoidable data movement. The result is conceptually cleaner and operationally cheaper.\n\nThe deck positions this as a great GenAI exercise: given the old code and a runtime model, could an assistant predict that direct clock queries would beat a procfs-based design? That is exactly the kind of unfamiliar-code reasoning you want the audience to imagine using in their own work.`, media: [
+          { type: "image", src: ".pptx_extract/ppt/media/image62.png", caption: "Replacement implementation using direct thread clock access." },
+          { type: "image", src: ".pptx_extract/ppt/media/image63.png", caption: "Outcome slide showing the drop from microseconds to nanoseconds." }
+        ], code: [
+          {
+            language: "cpp",
+            caption: "The optimized path shown in the later code slides.",
+            content: `static bool get_thread_clockid(Thread* thread, clockid_t* clockid, bool total) {
+  constexpr clockid_t CLOCK_TYPE_MASK = 3;
+  constexpr clockid_t CPUCLOCK_VIRT = 1;
+
+  int rc = pthread_getcpuclockid(thread->osthread()->pthread_id(), clockid);
+  if (rc != 0) {
+    assert_status(rc == ESRCH, rc, "pthread_getcpuclockid failed");
+    return false;
+  }
+
+  if (!total) {
+    *clockid = (*clockid & ~CLOCK_TYPE_MASK) | CPUCLOCK_VIRT;
+  }
+
+  return true;
+}
+
+static jlong user_thread_cpu_time(Thread* thread) {
+  clockid_t clockid;
+  bool success = get_thread_clockid(thread, &clockid, false);
+  return success ? os::Linux::thread_cpu_time(clockid) : -1;
+}`
+          }
+        ] },
+        { role: "user", content: "How do you turn all of this into backlog work instead of a nice conference insight?" },
+        { role: "assistant", slide: "Slides 74-79 | Naar de backlog", content: `The deck is very practical here. You tell the audience not to backlog vague technical clean-up. Backlog **outcomes** instead.\n\nExamples from the slides:\n\n- attach each waste item to euro-per-year impact\n- estimate energy or CO2 effect\n- include performance impact and risk\n- start with safe quick wins such as consolidation and right-sizing\n- reserve explicit delivery capacity, otherwise MVP pressure wins every time\n\nThe important management insight is that Product Owners prioritise outcomes, not infrastructure wording. So you translate waste into cost reduction, performance gain, or risk reduction.` },
+        { role: "user", content: "What framework do you leave them with for making decisions?" },
+        { role: "assistant", slide: "Slides 80-88 | Kaders en keuzes", content: `You leave the audience with three frames and one action model.\n\n**Frames**\n- Value: who uses this, what value does it create, what happens if we turn it off?\n- Cost: euro per year, energy or CO2, performance impact, operational complexity\n- Exception: is this a deliberate trade-off for compliance, resilience, peak load, or strategic flexibility?\n\n**ABCD actions**\n- **Afbouwen**: remove or switch off\n- **Bundelen**: consolidate or right-size\n- **Calibreren**: tune configuration or fix behaviour\n- **Dispensatie**: keep it intentionally, with an owner\n\nThat gives the talk a clean ending: not every inefficient thing must disappear, but every costly thing should become a conscious decision.` },
+        { role: "user", content: "How do you close the talk so the audience leaves with momentum?" },
+        { role: "assistant", slide: "Slides 89-92 | Aan de slag", content: `The final slides turn the room back onto itself with simple, useful questions:\n\n- What are you already doing around Sustainable IT?\n- What is blocking progress right now?\n- Which application has the most users, the most compute hours, or the highest cost?\n\nThat works well because it avoids a moral ending. Instead, the session closes with an engineering challenge: pick one meaningful workload, inspect it, find digital waste, and convert that insight into an owned improvement.`, media: [
+          { type: "image", src: ".pptx_extract/ppt/media/image64.png", caption: "Closing QR code from the deck." }
+        ] },
+        { role: "popup", content: "That is the deck as a chat experience: learn to see waste, relate it to workload quality, inspect real code, and leave with backlog-ready actions." }
       ]
     };
 
@@ -128,10 +239,12 @@
     let popupReadyTimer = null;
     let streamTimer = null;
     let currentStreamId = 0;
+    let sidebarFocusIndex = null;
 
     const clearTimer = (timer) => { if (timer) clearTimeout(timer); return null; };
     const scrollBottom = () => requestAnimationFrame(() => { messages.scrollTop = messages.scrollHeight; });
     const esc = (text) => text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+    const attr = (text) => esc(String(text)).replace(/"/g, "&quot;");
     const inline = (text) => text.replace(/\*\*\*(.+?)\*\*\*/g, "<strong><em>$1</em></strong>").replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>").replace(/\*(.+?)\*/g, "<em>$1</em>").replace(/`([^`]+)`/g, "<code>$1</code>");
     const truncate = (text, max = 58) => text.length <= max ? text : `${text.slice(0, max - 3).trimEnd()}...`;
 
@@ -169,13 +282,51 @@
       return out.join("\n");
     }
 
+    function renderMedia(media = []) {
+      if (!media.length) return "";
+      const cards = media.map((item) => {
+        const caption = item.caption ? `<div class="media-caption">${esc(item.caption)}</div>` : "";
+        if (item.type === "video") {
+          return `<figure class="media-card"><video controls preload="metadata" src="${attr(item.src)}"></video>${caption}</figure>`;
+        }
+        return `<figure class="media-card"><img src="${attr(item.src)}" alt="${attr(item.alt || item.caption || "slide media")}">${caption}</figure>`;
+      });
+      return `<div class="media-stack">${cards.join("")}</div>`;
+    }
+
+    function renderCode(code = []) {
+      const blocks = Array.isArray(code) ? code : [code];
+      const validBlocks = blocks.filter(Boolean);
+      if (!validBlocks.length) return "";
+      const cards = validBlocks.map((block) => {
+        const caption = block.caption ? `<div class="code-caption">${esc(block.caption)}</div>` : "";
+        return `<figure class="code-card"><pre><code>${esc(block.content || "")}</code></pre>${caption}</figure>`;
+      });
+      return `<div class="code-stack">${cards.join("")}</div>`;
+    }
+
+    function renderAssistantText(text, slide) {
+      const slideRef = slide ? `<div class="slide-ref">${esc(slide)}</div>` : "";
+      return `${slideRef}${renderMarkdown(text || "")}`;
+    }
+
+    function renderAssistantFull(item) {
+      return `${renderAssistantText(item.content || "", item.slide)}${renderMedia(item.media)}${renderCode(item.code)}`;
+    }
+
+    function popupInner(item, inlineCard = false) {
+      const button = inlineCard ? "" : `<div><button class="popup-btn" id="popup-btn" type="button" disabled>Continue</button></div>`;
+      return `<div class="${inlineCard ? "popup-inline" : "popup-card"}"><div class="robot speaking" id="popup-robot"><div class="mouth"></div></div><div class="popup-text">${esc(item.content)}</div>${inlineCard ? "" : `<div class="status"><span class="status-dot" id="popup-status-dot"></span><span id="popup-status-text">Presenting...</span></div>${button}`}</div>`;
+    }
+
     function setButton(label, disabled) {
       continueBtn.textContent = label;
       continueBtn.disabled = disabled;
     }
 
     function syncSidebar() {
-      [...sidebar.children].forEach((item, index) => item.classList.toggle("active", index === Math.min(step, chatData.steps.length - 1)));
+      const activeIndex = sidebarFocusIndex ?? Math.min(step, chatData.steps.length - 1);
+      [...sidebar.children].forEach((item, index) => item.classList.toggle("active", index === activeIndex));
     }
 
     function syncProgress() {
@@ -228,6 +379,14 @@
       scrollBottom();
     }
 
+    function appendPopupInline(item) {
+      const el = document.createElement("div");
+      el.className = "message popup";
+      el.innerHTML = popupInner(item, true);
+      messages.appendChild(el);
+      scrollBottom();
+    }
+
     function showTyping() {
       const el = document.createElement("div");
       el.className = "message";
@@ -236,10 +395,11 @@
       messages.appendChild(el);
       scrollBottom();
       const current = chatData.steps[step];
-      thinkTimer = setTimeout(() => revealAssistant(current.content), current.thinkingDelay ?? chatData.thinkingDelay);
+      thinkTimer = setTimeout(() => revealAssistant(current), current.thinkingDelay ?? chatData.thinkingDelay);
     }
 
-    function revealAssistant(content) {
+    function revealAssistant(item) {
+      const content = item.content || "";
       document.getElementById("typing-bubble")?.remove();
       const wrapper = document.createElement("div");
       wrapper.className = "message";
@@ -260,11 +420,11 @@
         index += 1;
         if (rendered !== snapshot) {
           snapshot = rendered;
-          contentEl.innerHTML = renderMarkdown(rendered);
+          contentEl.innerHTML = renderAssistantText(rendered, item.slide);
           scrollBottom();
         }
         if (index >= tokens.length) {
-          contentEl.innerHTML = renderMarkdown(content);
+          contentEl.innerHTML = renderAssistantFull(item);
           step += 1;
           appState = State.IDLE;
           syncProgress();
@@ -295,7 +455,7 @@
       const overlay = document.createElement("div");
       overlay.className = "popup-overlay";
       overlay.id = "popup-overlay";
-      overlay.innerHTML = `<div class="popup-card"><div class="robot speaking" id="popup-robot"><div class="mouth"></div></div><div class="popup-text">${esc(item.content)}</div><div class="status"><span class="status-dot" id="popup-status-dot"></span><span id="popup-status-text">Presenting...</span></div><div><button class="popup-btn" id="popup-btn" type="button" disabled>Continue</button></div></div>`;
+      overlay.innerHTML = popupInner(item);
       document.body.appendChild(overlay);
       requestAnimationFrame(() => overlay.classList.add("visible"));
       const robot = overlay.querySelector("#popup-robot");
@@ -331,11 +491,13 @@
 
     function advance() {
       if (appState !== State.IDLE) return;
+      sidebarFocusIndex = null;
       if (step >= chatData.steps.length) { completeDemo(); return; }
       progress.style.display = "flex";
       const item = chatData.steps[step];
       if (item.role === "popup") {
         appState = State.POPUP;
+        appendPopupInline(item);
         step += 1;
         syncProgress();
         setButton("Waiting...", true);
@@ -368,9 +530,10 @@
         if (item.role === "assistant") {
           const wrapper = document.createElement("div");
           wrapper.className = "message";
-          wrapper.innerHTML = `<div class="avatar">AI</div><div class="content">${renderMarkdown(item.content)}</div>`;
+          wrapper.innerHTML = `<div class="avatar">AI</div><div class="content">${renderAssistantFull(item)}</div>`;
           messages.appendChild(wrapper);
         }
+        if (item.role === "popup") appendPopupInline(item);
       }
       scrollBottom();
     }
@@ -383,9 +546,11 @@
       stopStreaming();
       document.getElementById("popup-overlay")?.remove();
       document.querySelectorAll(".badge, .restart-btn").forEach((el) => el.remove());
-      step = targetStep;
+      const renderedSteps = Math.min(targetStep + 1, chatData.steps.length);
+      step = renderedSteps;
       appState = State.IDLE;
-      rebuildTo(targetStep);
+      sidebarFocusIndex = targetStep;
+      rebuildTo(renderedSteps);
       syncProgress();
       syncInputState();
     }
@@ -418,6 +583,7 @@
       stopStreaming();
       step = 0;
       appState = State.IDLE;
+      sidebarFocusIndex = null;
       document.getElementById("popup-overlay")?.remove();
       document.querySelectorAll(".badge, .restart-btn").forEach((el) => el.remove());
       progress.style.display = "none";
