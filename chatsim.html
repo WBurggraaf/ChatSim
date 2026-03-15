@@ -70,6 +70,12 @@
     .media-card { display: grid; justify-items: center; }
     .media-card img, .media-card video { width: 100%; max-width: 100%; max-height: 50vh; display: block; border-radius: 12px; background: #0c0f11; object-fit: contain; }
     .media-caption, .code-caption { margin-top: 8px; color: var(--muted); font-size: 14px; }
+    .code-card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+    .code-lang-badge { font-size: 12px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: .06em; }
+    .copy-btn { border: 1px solid rgba(255,255,255,.12); background: rgba(255,255,255,.04); color: var(--muted); border-radius: 8px; padding: 4px 10px; font-size: 12px; font-weight: 600; cursor: pointer; line-height: 1.6; }
+    .copy-btn:hover { background: rgba(255,255,255,.08); color: var(--text); }
+    .copy-btn.copied { color: var(--accent); border-color: rgba(16,163,127,.3); background: rgba(16,163,127,.08); }
+    .tok-comment { color: #6a9955; } .tok-string { color: #ce9178; } .tok-kw { color: #569cd6; font-weight: 600; } .tok-type { color: #4ec9b0; } .tok-preproc { color: #c586c0; } .tok-num { color: #b5cea8; }
     .typing { display: inline-flex; gap: 6px; padding: 4px 0; }
     .typing span, .status-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--muted); animation: pulse 1s infinite ease-in-out; }
     .typing span:nth-child(2) { animation-delay: .14s; }
@@ -436,13 +442,80 @@
       });
     }
 
+    function highlightCode(rawCode, lang = "") {
+      if (!/^(c|cpp|c\+\+)$/i.test(lang)) return esc(rawCode);
+      const KEYWORDS = new Set(["static", "const", "void", "bool", "int", "char", "long", "unsigned", "short", "double", "float", "return", "if", "else", "while", "for", "do", "break", "continue", "struct", "typedef", "namespace", "using", "class", "public", "private", "protected", "new", "delete", "nullptr", "true", "false", "constexpr", "inline", "explicit", "virtual", "override", "auto", "decltype"]);
+      const TYPES = new Set(["size_t", "clockid_t", "pthread_t", "pid_t", "jlong", "FILE", "Thread", "OSThread", "jthread", "CLOCK_TYPE_MASK", "CPUCLOCK_VIRT"]);
+      const out = [];
+      let i = 0;
+      while (i < rawCode.length) {
+        if (rawCode[i] === "/" && rawCode[i + 1] === "/") {
+          const end = rawCode.indexOf("\n", i);
+          const s = end === -1 ? rawCode.slice(i) : rawCode.slice(i, end);
+          out.push(`<span class="tok-comment">${esc(s)}</span>`);
+          i += s.length;
+          continue;
+        }
+        if (rawCode[i] === "/" && rawCode[i + 1] === "*") {
+          const end = rawCode.indexOf("*/", i + 2);
+          const s = end === -1 ? rawCode.slice(i) : rawCode.slice(i, end + 2);
+          out.push(`<span class="tok-comment">${esc(s)}</span>`);
+          i += s.length;
+          continue;
+        }
+        if (rawCode[i] === '"') {
+          let j = i + 1;
+          while (j < rawCode.length && rawCode[j] !== '"') { if (rawCode[j] === "\\") j++; j++; }
+          out.push(`<span class="tok-string">${esc(rawCode.slice(i, j + 1))}</span>`);
+          i = j + 1;
+          continue;
+        }
+        if (rawCode[i] === "'") {
+          let j = i + 1;
+          while (j < rawCode.length && rawCode[j] !== "'") { if (rawCode[j] === "\\") j++; j++; }
+          out.push(`<span class="tok-string">${esc(rawCode.slice(i, j + 1))}</span>`);
+          i = j + 1;
+          continue;
+        }
+        if (rawCode[i] === "#" && (i === 0 || rawCode[i - 1] === "\n")) {
+          let j = i + 1;
+          while (j < rawCode.length && rawCode[j] !== "\n") j++;
+          out.push(`<span class="tok-preproc">${esc(rawCode.slice(i, j))}</span>`);
+          i = j;
+          continue;
+        }
+        if (rawCode[i] >= "0" && rawCode[i] <= "9") {
+          let j = i + 1;
+          while (j < rawCode.length && (rawCode[j] >= "0" && rawCode[j] <= "9" || rawCode[j] === "." || "uUlLfF".includes(rawCode[j]))) j++;
+          out.push(`<span class="tok-num">${esc(rawCode.slice(i, j))}</span>`);
+          i = j;
+          continue;
+        }
+        if (/[a-zA-Z_]/.test(rawCode[i])) {
+          let j = i + 1;
+          while (j < rawCode.length && /[a-zA-Z0-9_]/.test(rawCode[j])) j++;
+          const word = rawCode.slice(i, j);
+          if (KEYWORDS.has(word)) out.push(`<span class="tok-kw">${esc(word)}</span>`);
+          else if (TYPES.has(word)) out.push(`<span class="tok-type">${esc(word)}</span>`);
+          else out.push(esc(word));
+          i = j;
+          continue;
+        }
+        out.push(esc(rawCode[i]));
+        i++;
+      }
+      return out.join("");
+    }
+
     function renderCode(code = []) {
       const blocks = Array.isArray(code) ? code : [code];
       const validBlocks = blocks.filter(Boolean);
       if (!validBlocks.length) return "";
       const cards = validBlocks.map((block) => {
+        const lang = block.language || "";
+        const header = `<div class="code-card-header"><span class="code-lang-badge">${esc(lang)}</span><button class="copy-btn" type="button">Copy</button></div>`;
         const caption = block.caption ? `<div class="code-caption">${esc(block.caption)}</div>` : "";
-        return `<figure class="code-card"><pre><code>${esc(block.content || "")}</code></pre>${caption}</figure>`;
+        return `<figure class="code-card">${header}<pre><code>${highlightCode(block.content || "", lang)}</code></pre>${caption}</figure>`;
       });
       return `<div class="code-stack">${cards.join("")}</div>`;
     }
@@ -942,6 +1015,18 @@
         event.preventDefault();
         event.stopPropagation();
         openEditor(Number(button.dataset.stepEdit));
+        return;
+      }
+      const copyBtn = event.target.closest(".copy-btn");
+      if (copyBtn) {
+        const codeEl = copyBtn.closest(".code-card")?.querySelector("code");
+        if (codeEl) {
+          navigator.clipboard.writeText(codeEl.textContent || "").then(() => {
+            copyBtn.textContent = "Copied!";
+            copyBtn.classList.add("copied");
+            setTimeout(() => { copyBtn.textContent = "Copy"; copyBtn.classList.remove("copied"); }, 2000);
+          }).catch(() => {});
+        }
         return;
       }
       const image = event.target.closest(".media-card img");
