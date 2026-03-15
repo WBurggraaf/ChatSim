@@ -744,16 +744,22 @@
 
     function syncProgress() {
       dots.innerHTML = "";
-      const currentIndex = currentRenderedStepIndex();
-      chatData.steps.forEach((_, index) => {
+      const userStepIndexes = chatData.steps
+        .map((item, index) => item.role === "user" ? index : -1)
+        .filter((index) => index >= 0);
+      const seenUsers = chatData.steps.slice(0, step).filter((item) => item.role === "user").length;
+      let currentUserIndex = Math.min(seenUsers, Math.max(0, userStepIndexes.length - 1));
+      const renderedIndex = currentRenderedStepIndex();
+      const renderedUserIndex = userStepIndexes.findIndex((index) => index === renderedIndex);
+      if (renderedUserIndex >= 0) currentUserIndex = renderedUserIndex;
+      userStepIndexes.forEach((_, userIndex) => {
         const dot = document.createElement("span");
         dot.className = "dot";
-        if (index < step) dot.classList.add("done");
-        if (index === currentIndex) dot.classList.add("current");
+        if (userIndex < seenUsers) dot.classList.add("done");
+        if (userIndex === currentUserIndex) dot.classList.add("current");
         dots.appendChild(dot);
       });
       const users = chatData.steps.filter((item) => item.role === "user").length;
-      const seenUsers = chatData.steps.slice(0, step).filter((item) => item.role === "user").length;
       progressLabel.textContent = `${seenUsers} / ${users}`;
       syncSidebar();
     }
