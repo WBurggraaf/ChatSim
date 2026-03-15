@@ -128,9 +128,9 @@
   </aside>
   <main>
     <header>
-      <div id="demo-title">AI Business Strategy</div>
+      <div id="demo-title"></div>
       <div class="header-actions">
-        <div class="pill" id="model-label">ChatGPT 5.4</div>
+        <div class="pill" id="model-label"></div>
         <div class="menu-wrap">
           <button class="toolbar-btn" id="tools-menu-btn" type="button">Tools</button>
           <div class="menu-panel" id="tools-menu">
@@ -150,10 +150,10 @@
     <div class="editor-overlay" id="editor-overlay">
       <div class="editor-card">
         <h3 id="editor-title">Edit Step</h3>
-        <p id="editor-meta">Pas de step-content aan en sla op.</p>
+        <p id="editor-meta">Edit the step content and save.</p>
         <textarea class="editor-field" id="editor-field"></textarea>
         <div class="editor-actions">
-          <span class="editor-note">Alleen `step.content` wordt aangepast. Media en code blijven staan.</span>
+          <span class="editor-note">Only step.content is modified. Media and code remain unchanged.</span>
           <button class="toolbar-btn" id="editor-cancel-btn" type="button">Cancel</button>
           <button class="toolbar-btn active" id="editor-save-btn" type="button">Save Step</button>
         </div>
@@ -229,6 +229,7 @@
     const attr = (text) => esc(String(text)).replace(/"/g, "&quot;");
     const inline = (text) => text.replace(/\*\*\*(.+?)\*\*\*/g, "<strong><em>$1</em></strong>").replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>").replace(/\*(.+?)\*/g, "<em>$1</em>").replace(/`([^`]+)`/g, "<code>$1</code>");
     const truncate = (text, max = 58) => text.length <= max ? text : `${text.slice(0, max - 3).trimEnd()}...`;
+    const tokenDelay = (trimmed) => /[.!?]$/.test(trimmed) ? 110 : /[,;:]$/.test(trimmed) ? 70 : 34;
     const speechSupported = "speechSynthesis" in window && "SpeechSynthesisUtterance" in window;
 
     function selectPreferredVoice() {
@@ -259,11 +260,7 @@
     function estimateSpeechRate(text = "") {
       const words = stripSpeechText(text).split(/\s+/).filter(Boolean).length || 1;
       const tokens = text.match(/\S+\s*/g) || [text];
-      const streamMs = Math.max(1, tokens.reduce((total, token) => {
-        const trimmed = token.trim();
-        const delay = /[.!?]$/.test(trimmed) ? 110 : /[,;:]$/.test(trimmed) ? 70 : 34;
-        return total + delay;
-      }, 0));
+      const streamMs = Math.max(1, tokens.reduce((total, token) => total + tokenDelay(token.trim()), 0));
       const wordsPerMinute = (words / streamMs) * 60000;
       return Math.max(0.72, Math.min(1, wordsPerMinute / 165));
     }
@@ -645,7 +642,7 @@
         const button = document.createElement("button");
         button.type = "button";
         button.className = "sidebar-item";
-        button.innerHTML = `<span class="role">${item.role}</span><span>${getStepNumber(item, index)}. ${truncate(item.content.replace(/\s+/g, " "))}</span>`;
+        button.innerHTML = `<span class="role">${item.role}</span><span>${getStepNumber(item, index)}. ${truncate((item.content || "").replace(/\s+/g, " "))}</span>`;
         button.addEventListener("click", () => jumpToStep(index));
         sidebar.appendChild(button);
       });
@@ -672,17 +669,16 @@
       scrollBottom();
     }
 
-    function showTyping() {
+    function showTyping(item) {
       const el = document.createElement("div");
       el.className = "message";
       el.id = "typing-bubble";
       el.innerHTML = `<div class="avatar">AI</div><div class="content"><div class="typing"><span></span><span></span><span></span></div></div>`;
       messages.appendChild(el);
       scrollBottom();
-      const current = { ...chatData.steps[step], __stepIndex: step };
-      activeAssistantItem = current;
+      activeAssistantItem = item;
       activeAssistantContentEl = null;
-      thinkTimer = setTimeout(() => revealAssistant(current), current.thinkingDelay ?? chatData.thinkingDelay);
+      thinkTimer = setTimeout(() => revealAssistant(item), item.thinkingDelay ?? chatData.thinkingDelay);
     }
 
     function startAssistantStep(item, stepIndex) {
@@ -693,7 +689,7 @@
       appState = State.THINKING;
       setButton("...", true);
       fakeInput.textContent = `${chatData.model} is thinking...`;
-      thinkTimer = setTimeout(() => showTyping(), chatData.messageDelay);
+      thinkTimer = setTimeout(() => showTyping(current), chatData.messageDelay);
     }
 
     function revealAssistant(item, immediate = false) {
@@ -740,9 +736,7 @@
           finishAssistantStep();
           return;
         }
-        const trimmed = tokens[index - 1].trim();
-        const delay = /[.!?]$/.test(trimmed) ? 110 : /[,;:]$/.test(trimmed) ? 70 : 34;
-        streamTimer = setTimeout(tick, delay);
+        streamTimer = setTimeout(tick, tokenDelay(tokens[index - 1].trim()));
       }
       tick();
     }
@@ -849,8 +843,7 @@
     }
 
     function rebuildTo(targetStep) {
-      showWelcome();
-      if (targetStep === 0) return;
+      if (targetStep === 0) { showWelcome(); return; }
       messages.innerHTML = "";
       for (let i = 0; i < targetStep; i += 1) {
         const item = chatData.steps[i];
