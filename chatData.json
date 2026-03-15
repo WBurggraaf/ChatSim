@@ -53,7 +53,7 @@
         {
           "type": "image",
           "src": ".pptx_extract/ppt/media/image24.png",
-          "caption": "Slide 8: Freek as the spotting metaphor."
+          "caption": ""
         }
       ]
     },
@@ -66,7 +66,7 @@
         {
           "type": "image",
           "src": ".pptx_extract/ppt/media/image26.jpeg",
-          "caption": "Slide 10: learning to notice that one moment."
+          "caption": ""
         }
       ]
     },
@@ -83,7 +83,7 @@
         {
           "type": "image",
           "src": ".pptx_extract/ppt/media/image28.jpeg",
-          "caption": "Slide 13: and then... waste."
+          "caption": ""
         }
       ]
     },
@@ -100,7 +100,7 @@
         {
           "type": "image",
           "src": ".pptx_extract/ppt/media/image29.png",
-          "caption": "Slide 15: habit makes us blind."
+          "caption": ""
         }
       ]
     },
@@ -117,7 +117,7 @@
         {
           "type": "image",
           "src": ".pptx_extract/ppt/media/image30.png",
-          "caption": "Slide 16: not mine means easy to ignore."
+          "caption": ""
         }
       ]
     },
@@ -134,7 +134,7 @@
         {
           "type": "image",
           "src": ".pptx_extract/ppt/media/image31.png",
-          "caption": "Slide 17: until you cannot ignore it anymore."
+          "caption": ""
         }
       ]
     },
@@ -151,7 +151,7 @@
         {
           "type": "image",
           "src": ".pptx_extract/ppt/media/image32.png",
-          "caption": "Slide 18: what is this tree worth?"
+          "caption": ""
         }
       ]
     },
@@ -159,7 +159,14 @@
       "role": "assistant",
       "stepNumber": 19,
       "slide": "Tree Value",
-      "content": "The tree is framed as real value, roughly 150,000 to 250,000 euros. That reframes careless loss as measurable damage."
+      "content": "The tree is framed as real value, roughly 150,000 to 250,000 euros. That reframes careless loss as measurable damage.",
+      "media": [
+        {
+          "type": "image",
+          "src": ".pptx_extract/ppt/media/image32.png",
+          "caption": "Tree value made tangible."
+        }
+      ]
     },
     {
       "role": "user",
@@ -170,12 +177,13 @@
       "role": "assistant",
       "stepNumber": 21,
       "slide": "Electricity Maps",
-      "content": "You bring in electricity maps to make infrastructure consumption feel physical. Compute is not abstract; it runs somewhere real.",
+      "content": "You bring in Electricity Maps to make infrastructure consumption feel physical. Compute is not abstract; it runs somewhere real, with location, intensity, and trade-offs.",
+      "openImageFullscreenAfterSpeech": true,
       "media": [
         {
           "type": "image",
-          "src": ".pptx_extract/ppt/media/image34.png",
-          "caption": "Slide 21: Electricity Maps grounding the energy discussion."
+          "src": ".pptx_extract/ppt/media/image33.png",
+          "caption": "Electricity Maps view with the live generation mix."
         }
       ]
     },
@@ -188,7 +196,7 @@
         {
           "type": "image",
           "src": ".pptx_extract/ppt/media/image39.png",
-          "caption": "Slide 23: digital waste equals cost without value."
+          "caption": ""
         }
       ]
     },
@@ -251,7 +259,7 @@
         {
           "type": "image",
           "src": ".pptx_extract/ppt/media/image42.png",
-          "caption": "Slide 50: power versus utilization."
+          "caption": ""
         }
       ]
     },
@@ -274,7 +282,7 @@
         {
           "type": "image",
           "src": ".pptx_extract/ppt/media/image50.png",
-          "caption": "Slide 55: only 40 lines of code."
+          "caption": ""
         }
       ]
     },
@@ -287,7 +295,7 @@
         {
           "type": "image",
           "src": ".pptx_extract/ppt/media/image48.png",
-          "caption": "Slide 54: ThePrimeagen reference."
+          "caption": ""
         }
       ]
     },
@@ -300,7 +308,7 @@
         {
           "type": "image",
           "src": ".pptx_extract/ppt/media/image51.png",
-          "caption": "Slide 57: OpenJDK issue and case framing."
+          "caption": ""
         }
       ]
     },
@@ -324,7 +332,7 @@
         {
           "type": "image",
           "src": ".pptx_extract/ppt/media/image54.png",
-          "caption": "Slide 60: expensive calls in the old path."
+          "caption": ""
         }
       ],
       "code": [
@@ -355,7 +363,7 @@
         {
           "type": "image",
           "src": ".pptx_extract/ppt/media/image63.png",
-          "caption": "Slide 71: from microseconds to nanoseconds."
+          "caption": ""
         }
       ],
       "code": [
@@ -379,7 +387,7 @@
         {
           "type": "image",
           "src": ".pptx_extract/ppt/media/image64.png",
-          "caption": "Slide 73: check it out later."
+          "caption": ""
         }
       ]
     },
@@ -431,7 +439,7 @@
         {
           "type": "image",
           "src": ".pptx_extract/ppt/media/image65.jpeg",
-          "caption": "Slide 79: if you do nothing."
+          "caption": ""
         }
       ]
     },
