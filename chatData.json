@@ -6,18 +6,60 @@
   "steps": [
     {
       "role": "user",
+      "stepNumber": 0,
+      "content": "Can you briefly interview me first?"
+    },
+    {
+      "role": "assistant",
+      "stepNumber": "0A",
+      "slide": "Speaker Intro",
+      "content": "Sure. First question: who are you, and what do you spend your time working on?"
+    },
+    {
+      "role": "user",
+      "stepNumber": "0B",
+      "content": "Can you ask the next question?"
+    },
+    {
+      "role": "assistant",
+      "stepNumber": "0C",
+      "slide": "Speaker Intro",
+      "content": "Second question: what do you actually do, and why do software, architecture, and sustainability belong in the same conversation for you?"
+    },
+    {
+      "role": "user",
+      "stepNumber": "0D",
+      "content": "One more question"
+    },
+    {
+      "role": "assistant",
+      "stepNumber": "0E",
+      "slide": "My Upbringing",
+      "presentationStyle": "popup",
+      "content": "Final question: where does that perspective come from? Part of the answer is upbringing. Growing up around heavy industry made energy use, material flows, and waste feel visible and real from the start.",
+      "openImageFullscreenAfterSpeech": true,
+      "media": [
+        {
+          "type": "image",
+          "src": "upbrining.png",
+          "caption": "A glimpse of the environment that shaped how I think about energy, industry, and waste."
+        }
+      ]
+    },
+    {
+      "role": "user",
       "stepNumber": 1,
-      "content": "What is this session really about?"
+      "content": "What is this session about?"
     },
     {
       "role": "popup",
       "stepNumber": 2,
-      "content": "Digital waste is hidden cost without value. This journey helps you notice it, understand it, and act on it."
+      "content": "Spotting digital waste in code gives you energy because once you see waste clearly, you can do something about it."
     },
     {
       "role": "user",
       "stepNumber": 3,
-      "content": "What am I about to learn in this session?"
+      "content": "What will I learn here?"
     },
     {
       "role": "assistant",
@@ -28,7 +70,7 @@
     {
       "role": "user",
       "stepNumber": 5,
-      "content": "Where does the journey begin?"
+      "content": "Where does this start?"
     },
     {
       "role": "assistant",
@@ -46,7 +88,7 @@
     {
       "role": "user",
       "stepNumber": "6A",
-      "content": "Who is Freek?"
+      "content": "Who is Freek"
     },
     {
       "role": "assistant",
@@ -65,7 +107,7 @@
     {
       "role": "user",
       "stepNumber": "7A",
-      "content": "What does spotting train you to do?"
+      "content": "What does spotting teach you?"
     },
     {
       "role": "assistant",
@@ -83,7 +125,7 @@
     {
       "role": "user",
       "stepNumber": 9,
-      "content": "What do you start noticing?"
+      "content": "What do you notice first?"
     },
     {
       "role": "popup",
@@ -100,7 +142,7 @@
     {
       "role": "user",
       "stepNumber": 11,
-      "content": "Why did I not see that sooner?"
+      "content": "Why didn't I see it before?"
     },
     {
       "role": "popup",
@@ -117,7 +159,7 @@
     {
       "role": "user",
       "stepNumber": 13,
-      "content": "What else keeps people from seeing it?"
+      "content": "What else makes it easy to miss?"
     },
     {
       "role": "popup",
@@ -134,7 +176,7 @@
     {
       "role": "user",
       "stepNumber": 15,
-      "content": "When does ignoring it stop being possible?"
+      "content": "When can you not ignore it anymore?"
     },
     {
       "role": "popup",
@@ -151,7 +193,7 @@
     {
       "role": "user",
       "stepNumber": 17,
-      "content": "When does this become a value discussion?"
+      "content": "When does it become a value question?"
     },
     {
       "role": "popup",
@@ -168,7 +210,7 @@
     {
       "role": "user",
       "stepNumber": "18A",
-      "content": "What does that value framing change?"
+      "content": "What changes once you frame it as value?"
     },
     {
       "role": "assistant",
@@ -186,7 +228,7 @@
     {
       "role": "user",
       "stepNumber": 20,
-      "content": "How does that connect to software?"
+      "content": "How does that relate to software?"
     },
     {
       "role": "assistant",
@@ -205,7 +247,7 @@
     {
       "role": "user",
       "stepNumber": "21A",
-      "content": "So what is the core idea here?"
+      "content": "So what's the core idea?"
     },
     {
       "role": "assistant",
@@ -223,7 +265,7 @@
     {
       "role": "user",
       "stepNumber": "22A",
-      "content": "Can you show that idea in a cloud example?"
+      "content": "Can you show that in the cloud?"
     },
     {
       "role": "assistant",
@@ -241,7 +283,7 @@
     {
       "role": "user",
       "stepNumber": "22C",
-      "content": "And where does that choice show up?"
+      "content": "Where do you see that choice?"
     },
     {
       "role": "assistant",
@@ -259,7 +301,7 @@
     {
       "role": "user",
       "stepNumber": "22E",
-      "content": "Any caveat before the comparison?"
+      "content": "Any caveat before we compare?"
     },
     {
       "role": "assistant",
@@ -281,7 +323,7 @@
     {
       "role": "user",
       "stepNumber": "22I",
-      "content": "And what about higher utilization?"
+      "content": "What about higher utilization?"
     },
     {
       "role": "assistant",
@@ -292,7 +334,7 @@
     {
       "role": "user",
       "stepNumber": "22K",
-      "content": "And how do you quantify that?"
+      "content": "How do you quantify that?"
     },
     {
       "role": "assistant",
@@ -325,7 +367,7 @@
     {
       "role": "user",
       "stepNumber": 28,
-      "content": "Why does this waste stay alive for years?"
+      "content": "Why does this stay around for years?"
     },
     {
       "role": "assistant",
@@ -336,7 +378,7 @@
     {
       "role": "user",
       "stepNumber": 30,
-      "content": "How do I think beyond just electricity savings?"
+      "content": "How do I think beyond electricity savings?"
     },
     {
       "role": "assistant",
@@ -377,7 +419,7 @@
     {
       "role": "user",
       "stepNumber": 34,
-      "content": "Can a tiny code change really matter that much, and what example do you use?"
+      "content": "Can a tiny code change really matter that much?"
     },
     {
       "role": "popup",
@@ -413,7 +455,7 @@
     {
       "role": "user",
       "stepNumber": "35C",
-      "content": "Why does it catch attention?"
+      "content": "Why does that catch attention?"
     },
     {
       "role": "assistant",
@@ -432,7 +474,7 @@
     {
       "role": "user",
       "stepNumber": "36A",
-      "content": "What in the story stands out?"
+      "content": "What stands out in that story?"
     },
     {
       "role": "assistant",
@@ -470,7 +512,7 @@
     {
       "role": "user",
       "stepNumber": "37A",
-      "content": "What is the core technical idea?"
+      "content": "What's the core technical idea?"
     },
     {
       "role": "assistant",
@@ -481,7 +523,7 @@
     {
       "role": "user",
       "stepNumber": 39,
-      "content": "What exactly does the old implementation look like?"
+      "content": "What does the old implementation look like?"
     },
     {
       "role": "assistant",
@@ -530,7 +572,7 @@
     {
       "role": "user",
       "stepNumber": "40C",
-      "content": "What about the actual read path?"
+      "content": "What about the read path?"
     },
     {
       "role": "assistant",
@@ -555,7 +597,7 @@
     {
       "role": "user",
       "stepNumber": "40E",
-      "content": "And where does parsing show up?"
+      "content": "Where does parsing show up?"
     },
     {
       "role": "assistant",
@@ -593,7 +635,7 @@
     {
       "role": "user",
       "stepNumber": "41C",
-      "content": "Can you show that on actual code?"
+      "content": "Can you show that on real code?"
     },
     {
       "role": "assistant",
@@ -619,7 +661,7 @@
     {
       "role": "user",
       "stepNumber": "41E",
-      "content": "Could GenAI use that same code to predict the bottlenecks?"
+      "content": "Could GenAI predict the bottlenecks from that code?"
     },
     {
       "role": "assistant",
@@ -638,7 +680,7 @@
     {
       "role": "user",
       "stepNumber": 42,
-      "content": "So what does the better path change?"
+      "content": "So what changes in the better path?"
     },
     {
       "role": "assistant",
@@ -665,7 +707,7 @@
     {
       "role": "user",
       "stepNumber": 44,
-      "content": "How should I treat this code case during the talk?"
+      "content": "How should I use this code case in the talk?"
     },
     {
       "role": "popup",
@@ -682,7 +724,7 @@
     {
       "role": "user",
       "stepNumber": 46,
-      "content": "How do I turn this insight into backlog items?"
+      "content": "How do I turn this into backlog items?"
     },
     {
       "role": "assistant",
@@ -693,7 +735,7 @@
     {
       "role": "user",
       "stepNumber": "47A",
-      "content": "How should I phrase that as an outcome?"
+      "content": "How do I phrase that as an outcome?"
     },
     {
       "role": "assistant",
@@ -704,7 +746,7 @@
     {
       "role": "user",
       "stepNumber": "48A",
-      "content": "What kinds of actions come first?"
+      "content": "What actions come first?"
     },
     {
       "role": "assistant",
@@ -715,7 +757,7 @@
     {
       "role": "user",
       "stepNumber": "49A",
-      "content": "How do teams create room for that work?"
+      "content": "How do teams make room for that work?"
     },
     {
       "role": "assistant",
@@ -726,7 +768,7 @@
     {
       "role": "user",
       "stepNumber": "50A",
-      "content": "And who should own it?"
+      "content": "Who should own it?"
     },
     {
       "role": "assistant",
@@ -737,7 +779,7 @@
     {
       "role": "user",
       "stepNumber": 52,
-      "content": "What happens if teams leave this alone?"
+      "content": "What happens if teams leave it alone?"
     },
     {
       "role": "popup",
@@ -765,7 +807,7 @@
     {
       "role": "user",
       "stepNumber": "55A",
-      "content": "And what choices does that lead to?"
+      "content": "What choices does that lead to?"
     },
     {
       "role": "assistant",
@@ -787,7 +829,7 @@
     {
       "role": "user",
       "stepNumber": 59,
-      "content": "So what should I walk away with?"
+      "content": "What should I walk away with?"
     },
     {
       "role": "popup",
