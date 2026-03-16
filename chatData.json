@@ -7,36 +7,56 @@
     {
       "role": "user",
       "stepNumber": 0,
-      "content": "Can you briefly interview me first?"
+      "content": "Before we start, introduce yourself and then interview me"
     },
     {
       "role": "assistant",
       "stepNumber": "0A",
-      "slide": "Speaker Intro",
-      "content": "Sure. First question: who are you, and what do you spend your time working on?"
+      "slide": "Meet Sparky",
+      "presentationStyle": "popup",
+      "content": "I am Sparky, your AI co-host. Curious, concise, and professional. I will ask Wilco three quick questions so everyone knows who is speaking and why this topic matters today.",
+      "media": [
+        {
+          "type": "image",
+          "src": "robot-assistant.svg",
+          "className": "robot-float",
+          "caption": "Sparky, your AI co-host."
+        }
+      ]
     },
     {
       "role": "user",
       "stepNumber": "0B",
-      "content": "Can you ask the next question?"
+      "content": "Go ahead"
     },
     {
       "role": "assistant",
       "stepNumber": "0C",
       "slide": "Speaker Intro",
-      "content": "Second question: what do you actually do, and why do software, architecture, and sustainability belong in the same conversation for you?"
+      "content": "First question for Wilco: who are you, and what do you spend your time working on?"
     },
     {
       "role": "user",
       "stepNumber": "0D",
-      "content": "One more question"
+      "content": "Next question"
     },
     {
       "role": "assistant",
       "stepNumber": "0E",
+      "slide": "Speaker Intro",
+      "content": "Second question for Wilco: what do you actually do, and why do software, architecture, and sustainability belong in the same conversation for you?"
+    },
+    {
+      "role": "user",
+      "stepNumber": "0F",
+      "content": "One more"
+    },
+    {
+      "role": "assistant",
+      "stepNumber": "0G",
       "slide": "My Upbringing",
       "presentationStyle": "popup",
-      "content": "Final question: where does that perspective come from? Part of the answer is upbringing. Growing up around heavy industry made energy use, material flows, and waste feel visible and real from the start.",
+      "content": "Final question for Wilco: where does that perspective come from? Part of the answer is upbringing. Growing up around heavy industry made energy use, material flows, and waste feel visible and real from the start.",
       "openImageFullscreenAfterSpeech": true,
       "media": [
         {
@@ -319,6 +339,17 @@
       "stepNumber": "22H",
       "slide": "25% Utilization",
       "content": "At 25% utilization, a shared 16-vCPU AWS instance uses about 340 kWh per year, while a dedicated on-prem 16-core server uses about 1,600 kWh per year."
+    },
+    {
+      "role": "user",
+      "stepNumber": "22H1",
+      "content": "Why is there such a difference between AWS and on-prem?"
+    },
+    {
+      "role": "assistant",
+      "stepNumber": "22H2",
+      "slide": "Why AWS Differs",
+      "content": "Because the comparison is not one dedicated machine versus another dedicated machine. In AWS, that workload runs on shared infrastructure, so the energy burden of the physical server is spread across many tenants. On-prem, a lightly used dedicated server still carries most of its baseline power cost by itself."
     },
     {
       "role": "user",

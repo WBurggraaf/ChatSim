@@ -29,6 +29,7 @@
     body { display: flex; overflow: hidden; }
     aside { width: 250px; background: var(--panel); border-right: 1px solid var(--border); padding: 16px; display: flex; flex-direction: column; gap: 12px; }
     .sidebar-list { display: flex; flex-direction: column; gap: 8px; overflow: auto; }
+    .sidebar-timer { margin-top: auto; padding-top: 10px; border-top: 1px solid var(--border); font-family: Poppins, "Segoe UI", Arial, sans-serif; font-size: 40px; font-weight: 700; line-height: 1; color: #fff; letter-spacing: .02em; }
     .sidebar-item { width: 100%; border: 1px solid transparent; background: transparent; color: var(--muted); text-align: left; border-radius: 12px; padding: 10px; cursor: pointer; }
     .sidebar-item.active, .sidebar-item:hover { color: var(--text); background: rgba(255,255,255,0.04); border-color: rgba(16,163,127,0.25); }
     .role { display: block; font-size: 11px; text-transform: uppercase; letter-spacing: .08em; margin-bottom: 4px; }
@@ -73,6 +74,7 @@
     .media-card, .code-card { margin: 0; padding: 12px; border-radius: 18px; background: rgba(255,255,255,.03); border: 1px solid rgba(255,255,255,.08); }
     .media-card { display: grid; justify-items: center; }
     .media-card img, .media-card video { width: 100%; max-width: 100%; max-height: 50vh; display: block; border-radius: 12px; background: #0c0f11; object-fit: contain; }
+    .media-card img.robot-float { animation: robotFloat 3.2s ease-in-out infinite; transform-origin: center; filter: drop-shadow(0 16px 30px rgba(16,163,127,.18)); }
     .code-card { padding: 0; overflow: hidden; background: #10161c; border-color: rgba(83, 205, 171, .16); }
     .code-header { display: flex; justify-content: space-between; gap: 12px; align-items: center; padding: 10px 14px; border-bottom: 1px solid rgba(255,255,255,.08); background: linear-gradient(180deg, rgba(22,30,38,.96), rgba(16,22,28,.96)); }
     .code-language { display: inline-flex; align-items: center; justify-content: center; min-width: 44px; padding: 5px 10px; border-radius: 999px; background: rgba(16,163,127,.16); border: 1px solid rgba(16,163,127,.28); color: #c6f7ea; font-size: 12px; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; }
@@ -99,7 +101,8 @@
     .dot.done { background: var(--accent); }
     .dot.current { background: #fff; }
     .controls { display: flex; gap: 12px; align-items: center; border: 1px solid var(--border); border-radius: 22px; padding: 14px 16px; background: rgba(58,58,58,.88); }
-    .fake-input { flex: 1; color: var(--muted); font-size: 18px; }
+    .fake-input { flex: 1; color: #fff; font-size: 28px; font-weight: 700; }
+    .fake-input.typing::after { content: ""; display: inline-block; width: 2px; height: 1.05em; margin-left: 4px; vertical-align: -0.12em; background: rgba(255,255,255,.86); animation: caretBlink .9s steps(1) infinite; }
     button.primary, .restart-btn, .popup-btn { border: none; border-radius: 12px; background: var(--accent); color: #fff; font-weight: 700; padding: 12px 16px; cursor: pointer; }
     button.primary:hover, .restart-btn:hover, .popup-btn:hover:not(:disabled) { background: var(--accent-hover); }
     button.primary:disabled, .popup-btn:disabled { background: rgba(255,255,255,.08); color: var(--muted); cursor: not-allowed; }
@@ -114,13 +117,22 @@
     .image-lightbox-inner { width: calc(100vw - 24px); height: calc(100vh - 24px); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px; }
     .image-lightbox img { flex: 1 1 auto; width: auto; height: auto; max-width: 100%; max-height: 100%; border-radius: 18px; display: block; object-fit: contain; background: #0c0f11; }
     .image-lightbox-caption { color: var(--muted); font-size: 18px; text-align: center; }
+    .speaker-widget { position: absolute; top: 16px; left: 16px; width: min(150px, 16vw); min-width: 104px; padding: 10px; border-radius: 20px; border: 1px solid rgba(16,163,127,.24); background: rgba(12,16,18,.9); box-shadow: 0 14px 30px rgba(0,0,0,.28); display: grid; gap: 8px; justify-items: center; opacity: 0; transform: translateY(-8px) scale(.96); pointer-events: none; transition: opacity .18s ease, transform .18s ease; z-index: 40; }
+    .speaker-widget.visible { opacity: 1; transform: translateY(0) scale(1); }
+    .speaker-widget.speaking { box-shadow: 0 18px 38px rgba(16,163,127,.16), 0 0 0 1px rgba(16,163,127,.08); }
+    .speaker-widget img { width: 100%; aspect-ratio: 1 / 1; object-fit: contain; border-radius: 18px; background: radial-gradient(circle at top, rgba(16,163,127,.14), rgba(12,16,18,.24) 60%); }
+    .speaker-widget-name { font-size: 12px; font-weight: 700; letter-spacing: .05em; text-transform: uppercase; color: #d9fff3; }
+    .speaker-widget-status { display: inline-flex; gap: 6px; align-items: center; justify-content: center; min-height: 10px; }
+    .speaker-widget-status span { width: 7px; height: 7px; border-radius: 50%; background: rgba(126,245,207,.86); animation: pulse 1s infinite ease-in-out; }
+    .speaker-widget-status span:nth-child(2) { animation-delay: .14s; }
+    .speaker-widget-status span:nth-child(3) { animation-delay: .28s; }
     .popup-text { font-size: clamp(28px, 3.8vw, 56px); line-height: 1.15; margin-bottom: 22px; text-wrap: balance; }
     .message.popup { justify-content: center; }
     .popup-inline { width: min(900px, 100%); padding: 26px 28px; border-radius: 24px; text-align: center; background: radial-gradient(circle at top, rgba(16,163,127,.12), transparent 35%), linear-gradient(180deg, rgba(31,35,38,.92), rgba(20,22,24,.92)); border: 1px solid rgba(255,255,255,.08); position: relative; }
     .popup-inline .popup-text { font-size: clamp(22px, 2.9vw, 38px); margin-bottom: 0; }
     .popup-card .media-stack, .popup-inline .media-stack { margin-top: 0; }
     .popup-card .media-card, .popup-inline .media-card { background: rgba(255,255,255,.04); }
-    .popup-card .media-card img, .popup-card .media-card video { max-height: 42vh; object-fit: contain; }
+    .popup-card .media-card img, .popup-card .media-card video { max-height: 30vh; object-fit: contain; }
     .popup-inline .media-card img, .popup-inline .media-card video { max-height: 280px; object-fit: contain; }
     .toolbar-btn { border: 1px solid var(--border); background: rgba(255,255,255,.04); color: var(--text); border-radius: 12px; padding: 10px 14px; font-weight: 700; cursor: pointer; }
     .toolbar-btn:hover { background: rgba(255,255,255,.08); }
@@ -136,13 +148,16 @@
     .editor-actions { display: flex; gap: 10px; justify-content: flex-end; margin-top: 14px; flex-wrap: wrap; }
     .editor-note { color: var(--muted); font-size: 13px; }
     @keyframes pulse { 0%,100% { opacity:.35; transform: translateY(0); } 50% { opacity:1; transform: translateY(-1px); } }
-    @media (max-width: 900px) { body { flex-direction: column; } aside { width: 100%; max-height: 190px; border-right: none; border-bottom: 1px solid var(--border); } .popup-card { width: 92vw; min-height: 70vh; } .popup-text { font-size: clamp(24px, 6vw, 38px); } header { align-items: flex-start; } .header-actions { width: 100%; justify-content: flex-start; } .menu-panel { left: 0; right: auto; } .message-layout.media-left, .message-layout.media-right { grid-template-columns: 1fr; } .message-layout.media-left .message-media, .message-layout.media-right .message-media { order: 0; } .media-stack.columns-2, .media-stack.columns-3 { grid-template-columns: 1fr; } }
+    @keyframes caretBlink { 0%,49% { opacity: 1; } 50%,100% { opacity: 0; } }
+    @keyframes robotFloat { 0%,100% { transform: translateY(0) scale(1); } 50% { transform: translateY(-10px) scale(1.015); } }
+    @media (max-width: 900px) { body { flex-direction: column; } aside { width: 100%; max-height: 190px; border-right: none; border-bottom: 1px solid var(--border); } .popup-card { width: 92vw; min-height: 70vh; } .popup-text { font-size: clamp(24px, 6vw, 38px); } header { align-items: flex-start; } .header-actions { width: 100%; justify-content: flex-start; } .menu-panel { left: 0; right: auto; } .message-layout.media-left, .message-layout.media-right { grid-template-columns: 1fr; } .message-layout.media-left .message-media, .message-layout.media-right .message-media { order: 0; } .media-stack.columns-2, .media-stack.columns-3 { grid-template-columns: 1fr; } .speaker-widget { width: min(132px, 28vw); top: 12px; left: 12px; padding: 8px; } }
   </style>
 </head>
 <body>
   <aside>
     <div>ChatSim Presentation</div>
     <div class="sidebar-list" id="sidebar"></div>
+    <div class="sidebar-timer" id="sidebar-timer">00:00</div>
   </aside>
   <main>
     <header>
@@ -160,6 +175,11 @@
       </div>
     </header>
     <div id="messages"></div>
+    <div class="speaker-widget" id="speaker-widget" aria-hidden="true">
+      <img src="robot-assistant.svg" alt="Sparky speaking" class="robot-float">
+      <div class="speaker-widget-name">Sparky</div>
+      <div class="speaker-widget-status" aria-hidden="true"><span></span><span></span><span></span></div>
+    </div>
     <footer>
       <div class="progress" id="progress"><div class="dots" id="dots"></div><span id="progress-label"></span></div>
       <div class="controls" id="controls"><span class="fake-input" id="fake-input">Ask ChatGPT anything...</span><button class="primary" id="continue-btn" type="button">Start Demo</button></div>
@@ -187,13 +207,14 @@
   <script>
     let chatData = null;
 
-    const State = Object.freeze({ IDLE: "idle", THINKING: "thinking", STREAMING: "streaming", POPUP: "popup", COMPLETE: "complete" });
+    const State = Object.freeze({ IDLE: "idle", USER_TYPING: "user_typing", THINKING: "thinking", STREAMING: "streaming", POPUP: "popup", COMPLETE: "complete" });
     const messages = document.getElementById("messages");
     const sidebar = document.getElementById("sidebar");
     const continueBtn = document.getElementById("continue-btn");
     const progress = document.getElementById("progress");
     const dots = document.getElementById("dots");
     const progressLabel = document.getElementById("progress-label");
+    const sidebarTimer = document.getElementById("sidebar-timer");
     const fakeInput = document.getElementById("fake-input");
     const controls = document.getElementById("controls");
     const mainEl = document.querySelector("main");
@@ -211,12 +232,18 @@
     const imageLightbox = document.getElementById("image-lightbox");
     const imageLightboxImg = document.getElementById("image-lightbox-img");
     const imageLightboxCaption = document.getElementById("image-lightbox-caption");
+    const speakerWidget = document.getElementById("speaker-widget");
     let step = 0;
     let appState = State.IDLE;
     let thinkTimer = null;
     let popupTimer = null;
     let streamTimer = null;
+    let userTypeTimer = null;
+    let userSubmitTimer = null;
     let currentStreamId = 0;
+    let currentInputId = 0;
+    let presentationTimer = null;
+    let presentationStartedAt = null;
     let sidebarFocusIndex = null;
     let replayBackStepIndex = null;
     let editMode = false;
@@ -227,7 +254,38 @@
     let completedSpeechToken = 0;
     let currentUtterance = null;
     let selectedVoice = null;
+    let speakerWidgetToken = 0;
     const clearTimer = (timer) => { if (timer) clearTimeout(timer); return null; };
+    const setFakeInputText = (text, typing = false) => {
+      fakeInput.textContent = text;
+      fakeInput.classList.toggle("typing", typing);
+    };
+    const formatElapsed = (elapsedMs) => {
+      const totalSeconds = Math.max(0, Math.floor(elapsedMs / 1000));
+      const minutes = Math.floor(totalSeconds / 60);
+      const seconds = totalSeconds % 60;
+      return `${String(minutes).padStart(2, "0")}:${String(seconds).padStart(2, "0")}`;
+    };
+    function renderPresentationTimer() {
+      if (!sidebarTimer) return;
+      if (!presentationStartedAt) {
+        sidebarTimer.textContent = "00:00";
+        return;
+      }
+      sidebarTimer.textContent = formatElapsed(Date.now() - presentationStartedAt);
+    }
+    function stopPresentationTimer(reset = false) {
+      if (presentationTimer) clearInterval(presentationTimer);
+      presentationTimer = null;
+      if (reset) presentationStartedAt = null;
+      renderPresentationTimer();
+    }
+    function startPresentationTimer() {
+      if (presentationStartedAt) return;
+      presentationStartedAt = Date.now();
+      renderPresentationTimer();
+      presentationTimer = setInterval(renderPresentationTimer, 1000);
+    }
     const scrollBottom = (passes = 1) => {
       requestAnimationFrame(() => {
         messages.scrollTop = messages.scrollHeight;
@@ -249,7 +307,64 @@
     const inline = (text) => text.replace(/\*\*\*(.+?)\*\*\*/g, "<strong><em>$1</em></strong>").replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>").replace(/\*(.+?)\*/g, "<em>$1</em>").replace(/`([^`]+)`/g, "<code>$1</code>");
     const truncate = (text, max = 58) => text.length <= max ? text : `${text.slice(0, max - 3).trimEnd()}...`;
     const tokenDelay = (trimmed) => /[.!?]$/.test(trimmed) ? 110 : /[,;:]$/.test(trimmed) ? 70 : 34;
+    const promptCharDelay = (char) => /\s/.test(char) ? 55 : /[,.!?]/.test(char) ? 170 : 95;
     const speechSupported = "speechSynthesis" in window && "SpeechSynthesisUtterance" in window;
+
+    function showSpeakerWidget(token, item) {
+      if (!speakerWidget || item?.presentationStyle === "popup") return;
+      speakerWidgetToken = token;
+      speakerWidget.classList.add("visible", "speaking");
+      speakerWidget.setAttribute("aria-hidden", "false");
+    }
+
+    function hideSpeakerWidget(token = null) {
+      if (!speakerWidget) return;
+      if (token != null && token !== speakerWidgetToken) return;
+      speakerWidget.classList.remove("visible", "speaking");
+      speakerWidget.setAttribute("aria-hidden", "true");
+    }
+
+    function stopUserPromptSimulation(resetInput = false) {
+      currentInputId += 1;
+      userTypeTimer = clearTimer(userTypeTimer);
+      userSubmitTimer = clearTimer(userSubmitTimer);
+      if (resetInput) setFakeInputText("Ask ChatGPT anything...");
+      else fakeInput.classList.remove("typing");
+    }
+
+    function completeUserPrompt(item, stepIndex, simulationId) {
+      if (simulationId !== currentInputId) return;
+      setFakeInputText("Ask ChatGPT anything...");
+      appendUser(item.content, stepIndex);
+      step += 1;
+      appState = State.IDLE;
+      syncProgress();
+      syncInputState();
+    }
+
+    function startUserPrompt(item, stepIndex) {
+      const prompt = item.content || "";
+      const simulationId = ++currentInputId;
+      let index = 0;
+      let typed = "";
+      appState = State.USER_TYPING;
+      setButton("Typing...", true);
+      setFakeInputText("", true);
+      function tick() {
+        if (simulationId !== currentInputId) return;
+        if (index < prompt.length) {
+          typed += prompt[index];
+          index += 1;
+          setFakeInputText(typed, true);
+          userTypeTimer = setTimeout(tick, promptCharDelay(prompt[index - 1]));
+          return;
+        }
+        fakeInput.classList.remove("typing");
+        setButton("Sending...", true);
+        userSubmitTimer = setTimeout(() => completeUserPrompt(item, stepIndex, simulationId), 620);
+      }
+      userTypeTimer = setTimeout(tick, 220);
+    }
 
     function selectPreferredVoice() {
       if (!speechSupported) return null;
@@ -286,8 +401,8 @@
 
     function cancelAssistantSpeech(markCompleted = false) {
       if (!speechSupported) return;
-      if (markCompleted) completedSpeechToken = activeSpeechToken;
       currentUtterance = null;
+      hideSpeakerWidget();
       window.speechSynthesis.cancel();
     }
 
@@ -298,6 +413,7 @@
       if (!speechSupported || !speechText) return token;
       cancelAssistantSpeech(false);
       const utterance = new SpeechSynthesisUtterance(speechText);
+      showSpeakerWidget(token, item);
       selectedVoice = selectedVoice || selectPreferredVoice();
       if (selectedVoice) {
         utterance.voice = selectedVoice;
@@ -311,12 +427,12 @@
       utterance.onend = () => {
         if (activeSpeechToken !== token) return;
         completedSpeechToken = token;
+        hideSpeakerWidget(token);
         document.dispatchEvent(new CustomEvent("assistant-speech-done", { detail: { token } }));
       };
       utterance.onerror = () => {
         if (activeSpeechToken !== token) return;
-        completedSpeechToken = token;
-        document.dispatchEvent(new CustomEvent("assistant-speech-done", { detail: { token } }));
+        hideSpeakerWidget(token);
       };
       currentUtterance = utterance;
       window.speechSynthesis.speak(utterance);
@@ -407,13 +523,14 @@
 
     function renderMedia(media = [], { autoplay = false, columns = 1 } = {}) {
       if (!media.length) return "";
-      const cards = media.map((item) => {
+      const cards = media.map((item, index) => {
         const caption = item.caption ? `<div class="media-caption">${esc(item.caption)}</div>` : "";
         if (item.type === "video") {
           const autoplayAttr = autoplay ? ' data-autoplay-once="true"' : "";
           return `<figure class="media-card"><video controls playsinline preload="metadata"${autoplayAttr} src="${attr(item.src)}"></video>${caption}</figure>`;
         }
-        return `<figure class="media-card"><img src="${attr(item.src)}" alt="${attr(item.alt || item.caption || "slide media")}" data-caption="${attr(item.caption || "")}">${caption}</figure>`;
+        const imageClass = item.className ? ` class="${attr(item.className)}"` : "";
+        return `<figure class="media-card"><img${imageClass} src="${attr(item.src)}" alt="${attr(item.alt || item.caption || "slide media")}" data-caption="${attr(item.caption || "")}">${caption}</figure>`;
       });
       const validColumns = Math.max(1, Math.min(3, Number(columns) || 1));
       const columnClass = validColumns > 1 ? ` columns-${validColumns}` : "";
@@ -715,13 +832,14 @@
     function currentDisplayStepIndex() {
       if (!chatData.steps.length) return 0;
       if (sidebarFocusIndex != null) return sidebarFocusIndex;
-      if (appState === State.THINKING || appState === State.STREAMING) return Math.max(0, Math.min(step, chatData.steps.length - 1));
+      if (appState === State.USER_TYPING || appState === State.THINKING || appState === State.STREAMING) return Math.max(0, Math.min(step, chatData.steps.length - 1));
       return Math.max(0, Math.min(step - 1, chatData.steps.length - 1));
     }
 
     function currentRenderedStepIndex() {
       if (!chatData.steps.length) return 0;
       if (appState === State.POPUP) return Math.max(0, Math.min(step - 1, chatData.steps.length - 1));
+      if (appState === State.USER_TYPING) return Math.max(0, Math.min(step, chatData.steps.length - 1));
       if (appState === State.THINKING || appState === State.STREAMING) {
         const activeIndex = Number(activeAssistantItem?.__stepIndex);
         if (Number.isFinite(activeIndex)) return Math.max(0, Math.min(activeIndex, chatData.steps.length - 1));
@@ -768,11 +886,11 @@
       if (appState === State.POPUP) return;
       if (step >= chatData.steps.length) {
         setButton("Complete", true);
-        fakeInput.textContent = "Demo complete";
+        setFakeInputText("Demo complete");
         return;
       }
       setButton("Continue", false);
-      fakeInput.textContent = "Ask ChatGPT anything...";
+      setFakeInputText("Ask ChatGPT anything...");
     }
 
     function buildSidebar() {
@@ -829,7 +947,7 @@
       activeAssistantContentEl = null;
       appState = State.THINKING;
       setButton("...", true);
-      fakeInput.textContent = `${chatData.model} is thinking...`;
+      setFakeInputText(`${chatData.model} is thinking...`);
       thinkTimer = setTimeout(() => showTyping(current), chatData.messageDelay);
     }
 
@@ -847,8 +965,7 @@
       activeAssistantContentEl = contentEl;
       if (immediate) {
         contentEl.innerHTML = `${renderEditButton(item.__stepIndex)}${renderAssistantFull(item, { autoplayMedia: true })}`;
-        if (hasVideo(item.media) || item.openImageFullscreenAfterSpeech) activateAssistantMediaAfterSpeech(wrapper, item, speechToken);
-        else activateAutoplayVideos(wrapper);
+        activateAutoplayVideos(wrapper);
         keepScrolledToBottom();
         finishAssistantStep();
         return;
@@ -860,7 +977,7 @@
       let snapshot = "";
       appState = State.STREAMING;
       setButton("Writing...", true);
-      fakeInput.textContent = `${chatData.model} is responding...`;
+      setFakeInputText(`${chatData.model} is responding...`);
       function tick() {
         if (streamId !== currentStreamId) return;
         rendered += tokens[index];
@@ -893,6 +1010,7 @@
     function interruptActivePlayback() {
       cancelAssistantSpeech(true);
       stopStreaming();
+      stopUserPromptSimulation(true);
       popupTimer = clearTimer(popupTimer);
       pausePlayingVideos(messages);
       pausePlayingVideos(document);
@@ -902,6 +1020,11 @@
     }
 
     function flushAssistantResponse() {
+      if (appState === State.USER_TYPING && step < chatData.steps.length && chatData.steps[step].role === "user") {
+        stopUserPromptSimulation(false);
+        completeUserPrompt(chatData.steps[step], step, currentInputId);
+        return true;
+      }
       if (appState === State.THINKING && step < chatData.steps.length && chatData.steps[step].role === "assistant") {
         thinkTimer = clearTimer(thinkTimer);
         revealAssistant({ ...chatData.steps[step], __stepIndex: step }, true);
@@ -910,11 +1033,7 @@
       if (appState === State.STREAMING && activeAssistantItem && activeAssistantContentEl) {
         stopStreaming();
         activeAssistantContentEl.innerHTML = `${renderEditButton(activeAssistantItem.__stepIndex)}${renderAssistantFull(activeAssistantItem, { autoplayMedia: true })}`;
-        if (hasVideo(activeAssistantItem.media) || activeAssistantItem.openImageFullscreenAfterSpeech) {
-          activateAssistantMediaAfterSpeech(activeAssistantContentEl.closest(".message") || messages, activeAssistantItem, completedSpeechToken || activeSpeechToken);
-        } else {
-          activateAutoplayVideos(activeAssistantContentEl.closest(".message") || messages);
-        }
+        activateAutoplayVideos(activeAssistantContentEl.closest(".message") || messages);
         finishAssistantStep();
         return true;
       }
@@ -972,6 +1091,7 @@
       replayBackStepIndex = null;
       sidebarFocusIndex = null;
       if (step >= chatData.steps.length) { completeDemo(); return; }
+      if (step === 0 && !presentationStartedAt) startPresentationTimer();
       progress.style.display = "flex";
       const item = chatData.steps[step];
       if (item.role === "popup") {
@@ -980,15 +1100,12 @@
         step += 1;
         syncProgress();
         setButton("Waiting...", false);
-        fakeInput.textContent = "Presenter moment in progress...";
+        setFakeInputText("Presenter moment in progress...");
         showPopup({ ...item, __stepIndex: step - 1 });
         return;
       }
       if (item.role === "user") {
-        appendUser(item.content, step);
-        step += 1;
-        syncProgress();
-        syncInputState();
+        startUserPrompt(item, step);
         return;
       }
       if (item.role === "assistant") {
@@ -1020,6 +1137,7 @@
       replayBackStepIndex = null;
       thinkTimer = clearTimer(thinkTimer);
       popupTimer = clearTimer(popupTimer);
+      stopUserPromptSimulation(false);
       stopStreaming();
       cancelAssistantSpeech(true);
       document.getElementById("popup-overlay")?.remove();
@@ -1034,7 +1152,7 @@
       syncProgress();
       if (targetItem.role === "popup") {
         setButton("Waiting...", false);
-        fakeInput.textContent = "Presenter moment in progress...";
+        setFakeInputText("Presenter moment in progress...");
         showPopup({ ...targetItem, __stepIndex: targetStep });
       } else {
         syncInputState();
@@ -1046,7 +1164,7 @@
       if (appState === State.COMPLETE) return;
       appState = State.COMPLETE;
       setButton("Complete", true);
-      fakeInput.textContent = "Demo complete";
+      setFakeInputText("Demo complete");
       if (!controls.querySelector(".badge")) {
         const badge = document.createElement("span");
         badge.className = "badge";
@@ -1066,6 +1184,7 @@
     function restartDemo() {
       replayBackStepIndex = null;
       interruptActivePlayback();
+      stopPresentationTimer(true);
       activeAssistantItem = null;
       activeAssistantContentEl = null;
       step = 0;
@@ -1076,7 +1195,7 @@
       showWelcome();
       syncProgress();
       setButton("Start Demo", false);
-      fakeInput.textContent = "Ask ChatGPT anything...";
+      setFakeInputText("Ask ChatGPT anything...");
     }
 
     function replayMediaForStepIndex(stepIndex) {
@@ -1106,8 +1225,25 @@
     function goBackAction() {
       if (!chatData?.steps?.length) return;
       if (step === 0 && !messages.querySelector(".message")) return;
+      if (appState === State.USER_TYPING) {
+        const previousRendered = [...messages.querySelectorAll(".message[data-step-index]")].at(-1);
+        const previousIndex = previousRendered ? Number(previousRendered.dataset.stepIndex) : -1;
+        interruptActivePlayback();
+        replayBackStepIndex = null;
+        if (!Number.isFinite(previousIndex) || previousIndex < 0) {
+          restartDemo();
+          return;
+        }
+        jumpToStep(previousIndex);
+        return;
+      }
       interruptActivePlayback();
       const currentIndex = currentRenderedStepIndex();
+      if (currentIndex <= 0) {
+        replayBackStepIndex = null;
+        restartDemo();
+        return;
+      }
       const currentItem = chatData.steps[currentIndex];
       if (currentItem && hasVideo(currentItem.media) && replayBackStepIndex !== currentIndex) {
         jumpToStep(currentIndex);
@@ -1122,8 +1258,7 @@
 
     function goToFirstStepAction() {
       if (!chatData?.steps?.length) return;
-      interruptActivePlayback();
-      jumpToStep(0);
+      restartDemo();
     }
 
     function goToLastStepAction() {
@@ -1161,18 +1296,35 @@
     function handleGlobalKeydown(event) {
       const isEditableTarget = event.target?.matches?.("input, textarea, select, [contenteditable='true'], [contenteditable='']");
       if (imageLightbox.classList.contains("visible")) {
-        if (event.key === "Escape") {
+        if (event.key === "r" || event.key === "R") {
+          event.preventDefault();
+          closeImageLightbox();
+          restartDemo();
+        } else if (event.key === "Home") {
+          event.preventDefault();
+          closeImageLightbox();
+          goToFirstStepAction();
+        } else if (event.key === "End") {
+          event.preventDefault();
+          closeImageLightbox();
+          goToLastStepAction();
+        } else if (event.key === "Escape") {
           event.preventDefault();
           closeImageLightbox();
           continueBtn.focus({ preventScroll: true });
         } else if (event.key === "ArrowLeft" || event.key === "ArrowUp" || event.key === "PageUp" || event.key === "Backspace") {
           event.preventDefault();
+          closeImageLightbox();
           goBackAction();
-        } else if (event.key === " " || event.key === "ArrowRight") {
+        } else if (event.key === " " || event.key === "ArrowRight" || event.key === "ArrowDown" || event.key === "PageDown" || event.key === "Enter" || event.key === "n" || event.key === "N") {
           event.preventDefault();
           closeImageLightbox();
           continueBtn.focus({ preventScroll: true });
           continueAction();
+        } else if (event.key === "p" || event.key === "P") {
+          event.preventDefault();
+          closeImageLightbox();
+          goBackAction();
         }
         return;
       }
@@ -1243,12 +1395,13 @@
         updateSaveStatus("Loaded chatData.json", true);
         buildSidebar();
         showWelcome();
+        renderPresentationTimer();
         syncProgress();
         setButton("Start Demo", false);
       } catch (error) {
         messages.innerHTML = `<div class="welcome"><div><h2>Unable to load chatData.json</h2><p>Run <strong>npm start</strong> in this folder, then open <strong>http://localhost:3000/chatsim.html</strong>.</p></div></div>`;
         setButton("Unavailable", true);
-        fakeInput.textContent = "chatData.json not loaded";
+        setFakeInputText("chatData.json not loaded");
         updateSaveStatus("Load failed");
       }
     }
