@@ -255,6 +255,7 @@
     let currentUtterance = null;
     let selectedVoice = null;
     let speakerWidgetToken = 0;
+    let pendingFullscreenStepIndex = null;
     const clearTimer = (timer) => { if (timer) clearTimeout(timer); return null; };
     const setFakeInputText = (text, typing = false) => {
       fakeInput.textContent = text;
@@ -322,6 +323,17 @@
       if (token != null && token !== speakerWidgetToken) return;
       speakerWidget.classList.remove("visible", "speaking");
       speakerWidget.setAttribute("aria-hidden", "true");
+    }
+
+    function clearPendingFullscreen() {
+      pendingFullscreenStepIndex = null;
+    }
+
+    function consumePendingFullscreen() {
+      if (pendingFullscreenStepIndex == null) return false;
+      const stepIndex = pendingFullscreenStepIndex;
+      clearPendingFullscreen();
+      return replayMediaForStepIndex(stepIndex);
     }
 
     function stopUserPromptSimulation(resetInput = false) {
@@ -469,12 +481,16 @@
       const startMediaActions = () => setTimeout(() => {
         activateAutoplayVideos(scope);
         if (item?.openImageFullscreenAfterSpeech) {
+          clearPendingFullscreen();
           const imageIndex = Math.max(0, Number(item.fullscreenImageIndex) || 0);
           const img = scope.querySelectorAll("img")[imageIndex];
           if (img) openImageFromElement(img);
         }
       }, 1000);
       if (!hasVideo(item?.media) && !item?.openImageFullscreenAfterSpeech) return;
+      if (item?.openImageFullscreenAfterSpeech && item?.__stepIndex != null) {
+        pendingFullscreenStepIndex = item.__stepIndex;
+      }
       if (!speechSupported || completedSpeechToken === speechToken) {
         startMediaActions();
         return;
@@ -953,7 +969,7 @@
 
     function revealAssistant(item, immediate = false) {
       const content = item.content || "";
-      const speechToken = speakAssistantText(item);
+      const speechToken = immediate ? null : speakAssistantText(item);
       document.getElementById("typing-bubble")?.remove();
       const wrapper = document.createElement("div");
       wrapper.className = `message ${assistantPresentationClass(item)}`.trim();
@@ -968,6 +984,7 @@
         activateAutoplayVideos(wrapper);
         keepScrolledToBottom();
         finishAssistantStep();
+        if (item.openImageFullscreenAfterSpeech && item.__stepIndex != null) replayMediaForStepIndex(item.__stepIndex);
         return;
       }
       const tokens = content.match(/\S+\s*/g) || [content];
@@ -1011,6 +1028,7 @@
       cancelAssistantSpeech(true);
       stopStreaming();
       stopUserPromptSimulation(true);
+      clearPendingFullscreen();
       popupTimer = clearTimer(popupTimer);
       pausePlayingVideos(messages);
       pausePlayingVideos(document);
@@ -1031,10 +1049,13 @@
         return true;
       }
       if (appState === State.STREAMING && activeAssistantItem && activeAssistantContentEl) {
+        const stepIndex = activeAssistantItem.__stepIndex;
+        const shouldOpenFullscreen = !!activeAssistantItem.openImageFullscreenAfterSpeech;
         stopStreaming();
         activeAssistantContentEl.innerHTML = `${renderEditButton(activeAssistantItem.__stepIndex)}${renderAssistantFull(activeAssistantItem, { autoplayMedia: true })}`;
         activateAutoplayVideos(activeAssistantContentEl.closest(".message") || messages);
         finishAssistantStep();
+        if (shouldOpenFullscreen && stepIndex != null) replayMediaForStepIndex(stepIndex);
         return true;
       }
       return false;
@@ -1081,6 +1102,10 @@
         dismissPopup(true);
         return;
       }
+      if (appState === State.THINKING || appState === State.STREAMING || pendingFullscreenStepIndex != null) {
+        cancelAssistantSpeech(true);
+      }
+      if (consumePendingFullscreen()) return;
       if (flushAssistantResponse()) return;
       interruptActivePlayback();
       advance();
@@ -1225,6 +1250,10 @@
     function goBackAction() {
       if (!chatData?.steps?.length) return;
       if (step === 0 && !messages.querySelector(".message")) return;
+      if (appState === State.THINKING || appState === State.STREAMING || pendingFullscreenStepIndex != null) {
+        cancelAssistantSpeech(true);
+      }
+      if (consumePendingFullscreen()) return;
       if (appState === State.USER_TYPING) {
         const previousRendered = [...messages.querySelectorAll(".message[data-step-index]")].at(-1);
         const previousIndex = previousRendered ? Number(previousRendered.dataset.stepIndex) : -1;
@@ -1237,6 +1266,7 @@
         jumpToStep(previousIndex);
         return;
       }
+      if (flushAssistantResponse()) return;
       interruptActivePlayback();
       const currentIndex = currentRenderedStepIndex();
       if (currentIndex <= 0) {

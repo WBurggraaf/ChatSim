@@ -449,6 +449,25 @@
     },
     {
       "role": "user",
+      "stepNumber": "33A",
+      "content": "Can you request core utilization for a virtual machine in Linux?"
+    },
+    {
+      "role": "assistant",
+      "stepNumber": "33B",
+      "slide": "Linux proc stat",
+      "content": "Yes. In Linux, `/proc/stat` exposes cumulative CPU time counters for the whole system and for each core. The image shows those `cpu`, `cpu0`, `cpu1`, and similar lines. Each line reports time spent in modes like user, system, idle, and iowait. By reading the counters twice and comparing the change over time, you can estimate utilization per core, even inside a virtual machine.",
+      "openImageFullscreenAfterSpeech": true,
+      "media": [
+        {
+          "type": "image",
+          "src": "procstat.png",
+          "caption": "Example of `/proc/stat` CPU counters in Linux."
+        }
+      ]
+    },
+    {
+      "role": "user",
       "stepNumber": 34,
       "content": "Can a tiny code change really matter that much?"
     },
@@ -475,6 +494,7 @@
       "slide": "OpenJDK Issue",
       "presentationStyle": "popup",
       "content": "It starts with a concrete OpenJDK issue. That makes the case specific immediately, not abstract.",
+      "openImageFullscreenAfterSpeech": true,
       "media": [
         {
           "type": "image",
@@ -493,7 +513,7 @@
       "stepNumber": 36,
       "slide": "Primeagen",
       "presentationStyle": "popup",
-      "content": "Because it comes through someone engineers already recognize. That gives the story instant credibility and familiarity.",
+      "content": "Because it makes the idea feel real. You can immediately see that even a tiny code change can have a surprisingly large effect on performance, work done, and energy use.",
       "media": [
         {
           "type": "image",
@@ -655,6 +675,7 @@
       "slide": "Theoretical Model",
       "presentationStyle": "popup",
       "content": "Yes. A simple model links frequency, micro-operations, voltage, and switching. It is not perfect physics. It is a way to reason about where dynamic work is happening.",
+      "openImageFullscreenAfterSpeech": true,
       "media": [
         {
           "type": "image",
@@ -673,19 +694,19 @@
       "stepNumber": "41D",
       "slide": "Generated Example",
       "presentationStyle": "popup",
-      "content": "Yes. Here the code is annotated line by line with estimated micro-operations and energy cost. The point is to make hidden runtime work visible directly in the code.",
+      "content": "Yes. Here the code is shown with inline annotations for estimated micro-operations and energy cost. The point is to make hidden runtime work visible directly next to the code itself.",
       "media": [
         {
           "type": "image",
-          "src": ".pptx_extract/ppt/media/image60.png",
+          "src": "Screenshot Example.png",
           "caption": ""
         }
       ],
       "code": [
         {
           "language": "csharp",
-          "caption": "Annotated code example with estimated micro-ops and energy cost.",
-          "content": "class Program\n{\n  static void Main()\n  {\n    const int N = 1_000_000;           // compile-time constant, no runtime energy\n    var rnd = new Random();            // setup cost\n    var list = new List<int>(N);       // allocation cost\n\n    for (int i = 0; i < N; i++)        // loop overhead per iteration\n    {\n      int a = rnd.Next(1000), b = rnd.Next(1000); // RNG work\n      int sum = a + b, prod = a * b;              // arithmetic work\n      bool even = (sum % 2 == 0);                 // branch + modulo work\n      list.Add(even ? prod : sum);                // append work\n    }\n\n    list.Sort();                         // sorting dominates\n    var groups = list.GroupBy(x => x);   // grouping adds hash + scan work\n    var maxFreq = groups.Max(g => g.Count());\n\n    Console.WriteLine($\"Max frequency: {maxFreq}\");\n  }\n}"
+          "caption": "Annotated example with inline estimates taken from the screenshot.",
+          "content": "using System.Linq;                    // no runtime energy\n\nclass Program\n{\n    static void Main()\n    {\n        const int N = 1_000_000;                    // compile-time constant - no runtime energy\n        var rnd = new Random();                     // 5 uOp -> 2 e-9 mWh = 0.000002 mWh\n        var list = new List<int>(capacity: N);      // 10 uOp -> 4 e-9 mWh = 0.000004 mWh\n\n        // Loop body: 21 uOp per iteration -> 21 uOp x 1 000 000 = **21 000 000 uOp**\n        for (int i = 0; i < N; i++)                 // loop overhead 3 uOp/iter -> 0.0012 mWh\n        {\n            int a = rnd.Next(1000), b = rnd.Next(1000);\n            // 10 uOp/iter (two RNG calls) -> 0.004 mWh\n\n            int sum = a + b, prod = a * b;          // 3 uOp/iter -> 0.0012 mWh\n            bool even = (sum % 2 == 0);             // 3 uOp/iter -> 0.0012 mWh\n\n            list.Add(even ? prod : sum);            // 2 uOp/iter -> 0.0008 mWh\n            // **Loop total = 0.0084 mWh**\n        }\n\n        list.Sort();                                // ~200 M uOp (Timsort) -> 0.080 mWh\n        var groups = list.GroupBy(x => x);          // ~1.08 M uOp (hash buckets + scan) -> 0.000432 mWh\n        var maxFreq = groups.Max(g => g.Count());   // ~1 M uOp (final scan) -> 0.000400 mWh\n\n        Console.WriteLine($\"Max frequency: {maxFreq}\");\n        // 30 uOp -> 1.2 e-8 mWh (negligible)\n    }\n}"
         }
       ]
     },
@@ -710,6 +731,34 @@
     },
     {
       "role": "user",
+      "stepNumber": "41G",
+      "content": "What hotspots would it probably point to first?"
+    },
+    {
+      "role": "assistant",
+      "stepNumber": "41H",
+      "slide": "Likely Hotspots",
+      "content": "A plausible answer would be: `fopen()`, `fread()`, and `sscanf()`. Each one concentrates a different kind of work. Opening the procfs file drives path resolution and kernel setup. Reading it moves data from kernel space to user space. Parsing it turns ASCII text into numbers with branch-heavy conversion logic.",
+      "code": [
+        {
+          "language": "cpp",
+          "caption": "1. `fread()` block",
+          "content": "statlen = fread(stat, 1, 2047, fp);   // ~0.00010 mWh, ~300k uops (sys_read + copy + kernel formatting)\nstat[statlen] = '\\0';                // ~0.0000001 mWh, ~5 uops (store)\nfclose(fp);                           // ~0.00002 mWh, ~80k uops (sys_close + teardown)"
+        },
+        {
+          "language": "cpp",
+          "caption": "2. `fopen()` block",
+          "content": "os::snprintf_checked(proc_name, 64, \"/proc/self/task/%d/stat\", tid); // ~0.000002 mWh, ~5k uops (formatting)\nfp = os::fopen(proc_name, \"r\");                                   // ~0.00003 mWh, ~100k uops (open + VFS walk)\nif (fp == nullptr) return -1;                                      // ~0.0000001 mWh, ~3 uops"
+        },
+        {
+          "language": "cpp",
+          "caption": "3. `sscanf()` block",
+          "content": "count = sscanf(s, \"%c %d %d %d %d %d %lu %lu %lu %lu %lu %lu %lu\", // ~0.00002 mWh, ~60k uops (parsing + conversions)\n  &cdummy, &idummy, &idummy, &idummy, &idummy, &idummy,\n  &ldummy, &ldummy, &ldummy, &ldummy, &ldummy, &user_time, &sys_time);\nif (count != 13) return -1;                                        // ~0.0000001 mWh, ~5 uops"
+        }
+      ]
+    },
+    {
+      "role": "user",
       "stepNumber": 42,
       "content": "So what changes in the better path?"
     },
@@ -719,19 +768,31 @@
       "slide": "Better Implementation",
       "presentationStyle": "popup",
       "content": "The better path asks the kernel directly for the right clock. Less parsing, less copying, fewer syscalls, and much better latency.",
+      "code": [
+        {
+          "language": "cpp",
+          "caption": "The optimized path.",
+          "content": "static bool get_thread_clockid(Thread* thread, clockid_t* clockid, bool total) {\n  constexpr clockid_t CLOCK_TYPE_MASK = 3;\n  constexpr clockid_t CPUCLOCK_VIRT = 1;\n\n  int rc = pthread_getcpuclockid(thread->osthread()->pthread_id(), clockid);\n  if (rc != 0) {\n    assert_status(rc == ESRCH, rc, \"pthread_getcpuclockid failed\");\n    return false;\n  }\n\n  if (!total) {\n    *clockid = (*clockid & ~CLOCK_TYPE_MASK) | CPUCLOCK_VIRT;\n  }\n\n  return true;\n}\n\nstatic jlong user_thread_cpu_time(Thread* thread) {\n  clockid_t clockid;\n  bool success = get_thread_clockid(thread, &clockid, false);\n  return success ? os::Linux::thread_cpu_time(clockid) : -1;\n}"
+        }
+      ]
+    },
+    {
+      "role": "user",
+      "stepNumber": "43A",
+      "content": "Can you show that visually too?"
+    },
+    {
+      "role": "assistant",
+      "stepNumber": "43B",
+      "slide": "Better Implementation Visual",
+      "presentationStyle": "popup",
+      "content": "Yes. This visual shows the shift from the heavier procfs path to the more direct clock-based path.",
       "openImageFullscreenAfterSpeech": true,
       "media": [
         {
           "type": "image",
           "src": ".pptx_extract/ppt/media/image63.png",
           "caption": ""
-        }
-      ],
-      "code": [
-        {
-          "language": "cpp",
-          "caption": "The optimized path.",
-          "content": "static bool get_thread_clockid(Thread* thread, clockid_t* clockid, bool total) {\n  constexpr clockid_t CLOCK_TYPE_MASK = 3;\n  constexpr clockid_t CPUCLOCK_VIRT = 1;\n\n  int rc = pthread_getcpuclockid(thread->osthread()->pthread_id(), clockid);\n  if (rc != 0) {\n    assert_status(rc == ESRCH, rc, \"pthread_getcpuclockid failed\");\n    return false;\n  }\n\n  if (!total) {\n    *clockid = (*clockid & ~CLOCK_TYPE_MASK) | CPUCLOCK_VIRT;\n  }\n\n  return true;\n}\n\nstatic jlong user_thread_cpu_time(Thread* thread) {\n  clockid_t clockid;\n  bool success = get_thread_clockid(thread, &clockid, false);\n  return success ? os::Linux::thread_cpu_time(clockid) : -1;\n}"
         }
       ]
     },
